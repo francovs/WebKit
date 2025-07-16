@@ -2674,6 +2674,21 @@ EventHandlerDrivenSmoothKeyboardScrollingEnabled:
     WebCore:
       default: false
 
+EventTimingEnabled:
+  type: bool
+  status: internal
+  category: dom
+  humanReadableName: "Event Timing API"
+  humanReadableDescription: "Enables the Event Timing API and supporting instrumentation"
+  webcoreGetter: isEventTimingEnabled
+  defaultValue:
+    WebKitLegacy:
+      default: false
+    WebKit:
+      default: false
+    WebCore:
+      default: false
+
 ExperimentalSandboxEnabled:
   type: bool
   status: internal

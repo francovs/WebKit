@@ -3849,6 +3849,7 @@ JSEndingType.cpp
 JSErrorCallback.cpp
 JSErrorEvent.cpp
 JSEvent.cpp
+JSEventCounts.cpp
 JSEventInit.cpp
 JSEventListenerOptions.cpp
 JSEventModifierInit.cpp
@@ -4368,6 +4369,7 @@ JSPaymentValidationErrors.cpp
 JSPbkdf2Params.cpp
 JSPerformance.cpp
 JSPerformanceEntry.cpp
+JSPerformanceEventTiming.cpp
 JSPerformanceMark.cpp
 JSPerformanceMarkOptions.cpp
 JSPerformanceMeasure.cpp

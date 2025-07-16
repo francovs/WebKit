@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2012 Google Inc. All rights reserved.
- * Copyright (C) 2012 Intel Inc. All rights reserved.
+ * Copyright (C) 2025 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -29,50 +28,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include "Performance.h"
-#include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
+#include "config.h"
+#include "PerformanceEventTiming.h"
+#include "page/PerformanceEntry.h"
 
 namespace WebCore {
 
-DECLARE_ALLOCATOR_WITH_HEAP_IDENTIFIER(PerformanceEntry);
-class PerformanceEntry : public RefCounted<PerformanceEntry> {
-    WTF_MAKE_FAST_ALLOCATED_WITH_HEAP_IDENTIFIER(PerformanceEntry);
-public:
-    virtual ~PerformanceEntry();
+PerformanceEntry::Type PerformanceEventTiming::performanceEntryType() const
+{
+    return Type::Event;
+}
 
-    const String& name() const { return m_name; }
-    virtual double startTime() const { return m_startTime; }
-    virtual double duration() const { return m_duration; }
+double PerformanceEventTiming::processingStart() const
+{
+    return 0;
+}
 
-    enum class Type : uint8_t {
-        Navigation  = 1 << 0,
-        Mark        = 1 << 1,
-        Measure     = 1 << 2,
-        Resource    = 1 << 3,
-        Paint       = 1 << 4,
-        Event       = 1 << 5
-    };
+double PerformanceEventTiming::processingEnd() const
+{
+    return 0;
+}
 
-    virtual Type performanceEntryType() const = 0;
-    virtual ASCIILiteral entryType() const = 0;
+bool PerformanceEventTiming::cancelable() const
+{
+    return false;
+}
 
-    static std::optional<Type> parseEntryTypeString(const String& entryType);
+Node* PerformanceEventTiming::target() const
+{
+    return nullptr;
+}
 
-    static bool startTimeCompareLessThan(const Ref<PerformanceEntry>& a, const Ref<PerformanceEntry>& b)
-    {
-        return a->startTime() < b->startTime();
-    }
-
-protected:
-    PerformanceEntry(const String& name, double startTime, double finishTime);
-
-private:
-    const String m_name;
-    const double m_startTime;
-    const double m_duration;
-};
+unsigned PerformanceEventTiming::interactionId() const
+{
+    return 0;
+}
 
 } // namespace WebCore

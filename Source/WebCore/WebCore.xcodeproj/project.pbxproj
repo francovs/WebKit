@@ -1811,6 +1811,10 @@
 		480A2F532CDFC1F800407331 /* AccessibilitySpinButtonPart.h in Headers */ = {isa = PBXBuildFile; fileRef = 480A2F512CDFC1F800407331 /* AccessibilitySpinButtonPart.h */; };
 		4822970E29C8EBC00033A126 /* RegionContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 4822970C29C8EBC00033A126 /* RegionContext.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		486B8DC72A043C0600E00E73 /* AXGeometryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 486B8DC62A043C0600E00E73 /* AXGeometryManager.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		489CE07E2E26BE9C0048F1AD /* EventCounts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 489CE07D2E26BE9C0048F1AD /* EventCounts.cpp */; };
+		489CE07F2E26BE9C0048F1AD /* EventCounts.h in Headers */ = {isa = PBXBuildFile; fileRef = 489CE07C2E26BE9C0048F1AD /* EventCounts.h */; };
+		489CE0842E26BF440048F1AD /* PerformanceEventTiming.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 489CE0832E26BF440048F1AD /* PerformanceEventTiming.cpp */; };
+		489CE0852E26BF440048F1AD /* PerformanceEventTiming.h in Headers */ = {isa = PBXBuildFile; fileRef = 489CE0822E26BF440048F1AD /* PerformanceEventTiming.h */; };
 		48B0242A2B2A65AA0083D122 /* AXTextRun.h in Headers */ = {isa = PBXBuildFile; fileRef = 48B024282B2A65AA0083D122 /* AXTextRun.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		48B5BF3729CA691700FEBE3B /* AccessibilityRegionContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 48B5BF3529CA691700FEBE3B /* AccessibilityRegionContext.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		48D0E12929F7329E00263857 /* ElementAnimationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 48D0E12829F7322900263857 /* ElementAnimationContext.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -11249,6 +11253,13 @@
 		484F5FBD2CEFA23700E7B1B1 /* AXCoreObjectCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AXCoreObjectCocoa.mm; sourceTree = "<group>"; };
 		486B8DC62A043C0600E00E73 /* AXGeometryManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AXGeometryManager.h; sourceTree = "<group>"; };
 		486B8DC82A04500F00E00E73 /* AXGeometryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AXGeometryManager.cpp; sourceTree = "<group>"; };
+		489CE07C2E26BE9C0048F1AD /* EventCounts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventCounts.h; sourceTree = "<group>"; };
+		489CE07D2E26BE9C0048F1AD /* EventCounts.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EventCounts.cpp; sourceTree = "<group>"; };
+		489CE0802E26BEC30048F1AD /* EventCounts.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = EventCounts.idl; sourceTree = "<group>"; };
+		489CE0812E26BEEB0048F1AD /* Performance+EventCounts.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Performance+EventCounts.idl"; sourceTree = "<group>"; };
+		489CE0822E26BF440048F1AD /* PerformanceEventTiming.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PerformanceEventTiming.h; sourceTree = "<group>"; };
+		489CE0832E26BF440048F1AD /* PerformanceEventTiming.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PerformanceEventTiming.cpp; sourceTree = "<group>"; };
+		489CE0862E26BF770048F1AD /* PerformanceEventTiming.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = PerformanceEventTiming.idl; sourceTree = "<group>"; };
 		48AA91ED2DD7BDFD0038F076 /* AXTreeStore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AXTreeStore.cpp; sourceTree = "<group>"; };
 		48B024282B2A65AA0083D122 /* AXTextRun.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AXTextRun.h; sourceTree = "<group>"; };
 		48B5BF3529CA691700FEBE3B /* AccessibilityRegionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessibilityRegionContext.h; sourceTree = "<group>"; };
@@ -28785,6 +28796,9 @@
 				F454C1382BA3F8FB00871551 /* ElementTargetingController.h */,
 				F454C1322BA3B54C00871551 /* ElementTargetingTypes.h */,
 				E36D701E27B71F04006531B7 /* EmptyAttachmentElementClient.h */,
+				489CE07D2E26BE9C0048F1AD /* EventCounts.cpp */,
+				489CE07C2E26BE9C0048F1AD /* EventCounts.h */,
+				489CE0802E26BEC30048F1AD /* EventCounts.idl */,
 				93C09A800B064F00005ABD4D /* EventHandler.cpp */,
 				93C09A520B064DB3005ABD4D /* EventHandler.h */,
 				E0FEF371B27C53EAC1C1FBEE /* EventSource.cpp */,
@@ -28936,6 +28950,7 @@
 				371E65CD13661EED00BEEDB0 /* PageSerializer.cpp */,
 				371E65CB13661EDC00BEEDB0 /* PageSerializer.h */,
 				46893B8327E8D716002CC13D /* PartitionedSecurityOrigin.h */,
+				489CE0812E26BEEB0048F1AD /* Performance+EventCounts.idl */,
 				7C72471E2516758800C363CD /* Performance+NavigationTiming.idl */,
 				7C72471C251674CE00C363CD /* Performance+PerformanceTimeline.idl */,
 				7C72471D2516752C00C363CD /* Performance+ResourceTiming.idl */,
@@ -28946,6 +28961,9 @@
 				CB38FD4A1CCCF2DD00592A3F /* PerformanceEntry.cpp */,
 				86BE33FB15058CB200CE0FD8 /* PerformanceEntry.h */,
 				86BE33FC15058CB200CE0FD8 /* PerformanceEntry.idl */,
+				489CE0832E26BF440048F1AD /* PerformanceEventTiming.cpp */,
+				489CE0822E26BF440048F1AD /* PerformanceEventTiming.h */,
+				489CE0862E26BF770048F1AD /* PerformanceEventTiming.idl */,
 				AD5A0C211DECA10100707054 /* PerformanceLogging.cpp */,
 				AD5A0C201DECA0B500707054 /* PerformanceLogging.h */,
 				0FF2E80C1EE0D430009EABD4 /* PerformanceLoggingClient.cpp */,
@@ -41660,6 +41678,7 @@
 				2ECF7AE210162B5800427DE7 /* ErrorEvent.h in Headers */,
 				85031B420A44EFC700F992E0 /* Event.h in Headers */,
 				4138D3351244054800323D33 /* EventContext.h in Headers */,
+				489CE07F2E26BE9C0048F1AD /* EventCounts.h in Headers */,
 				418A06D0133C04D500CD379C /* EventDispatcher.h in Headers */,
 				93C09A530B064DB3005ABD4D /* EventHandler.h in Headers */,
 				970B72A6145008EB00F00A37 /* EventHeaders.h in Headers */,
@@ -44023,6 +44042,7 @@
 				E3FA38641D71812D00AA5950 /* PendingScriptClient.h in Headers */,
 				8A844D0511D3C18E0014065C /* Performance.h in Headers */,
 				86BE340115058CB200CE0FD8 /* PerformanceEntry.h in Headers */,
+				489CE0852E26BF440048F1AD /* PerformanceEventTiming.h in Headers */,
 				AD5A0C251DECACCC00707054 /* PerformanceLogging.h in Headers */,
 				0F850FE31ED7C18300FB77A7 /* PerformanceLoggingClient.h in Headers */,
 				37C738E91EDBD2FA003F2B0B /* PerformanceMark.h in Headers */,
@@ -46739,6 +46759,7 @@
 				2D22830323A8470700364B7E /* CursorMac.mm in Sources */,
 				5CBD59592280E926002B22AA /* CustomHeaderFields.cpp in Sources */,
 				07E4BDBF2A3A5FAB000D5509 /* DictationCaretAnimator.cpp in Sources */,
+				489CE07E2E26BE9C0048F1AD /* EventCounts.cpp in Sources */,
 				7CE6CBFD187F394900D46BF5 /* FormatConverter.cpp in Sources */,
 				4667EA3E2968D9DA00BAB1E2 /* GameControllerHapticEffect.mm in Sources */,
 				46FE73D32968E52000B8064C /* GameControllerHapticEngines.mm in Sources */,
@@ -46800,6 +46821,7 @@
 				1A569D1A0D7E2B82007C3983 /* objc_utility.mm in Sources */,
 				E16982601134636A00894115 /* ObjCRuntimeObject.mm in Sources */,
 				07E4BDC32A3A6191000D5509 /* OpacityCaretAnimator.cpp in Sources */,
+				489CE0842E26BF440048F1AD /* PerformanceEventTiming.cpp in Sources */,
 				41B71FFC2DE076DD00467A31 /* PixelBufferConformerCV.mm in Sources */,
 				CEA284662141E84900E407E8 /* PlatformEventFactoryIOS.mm in Sources */,
 				AA12DF491743DF83004DAFDF /* PlatformSpeechSynthesizerCocoa.mm in Sources */,
