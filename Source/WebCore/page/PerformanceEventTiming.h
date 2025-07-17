@@ -33,7 +33,6 @@
 #pragma once
 
 #include "PerformanceEntry.h"
-#include <wtf/WeakPtr.h>
 
 namespace WebCore {
 
@@ -41,12 +40,9 @@ class Node;
 
 class PerformanceEventTiming final : public PerformanceEntry {
 public:
-
     static Ref<PerformanceEventTiming> create() {
         return adoptRef(*new PerformanceEventTiming());
     }
-
-    ~PerformanceEventTiming() = default;
 
     double processingStart() const;
     double processingEnd() const;

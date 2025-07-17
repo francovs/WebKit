@@ -31,22 +31,31 @@
 
 #pragma once
 
+#include "wtf/HashMap.h"
+#include "wtf/text/AtomString.h"
 #include <wtf/RefCounted.h>
+#include <memory>
 
 namespace WebCore {
 
 class DOMMapAdapter;
+class Symbol;
 
 class EventCounts final: public RefCounted<EventCounts> {
 public:
     static Ref<EventCounts> create() {
         return adoptRef(*new EventCounts());
     }
-    
+    ~EventCounts();
+
+    void inc(const AtomString &eventType);
     void initializeMapLike(DOMMapAdapter&);
 
+    static bool IsCandidateForEventTiming(const AtomString &eventType);
 private:
     EventCounts();
+    HashMap<String, unsigned> m_counts;
+    std::unique_ptr<DOMMapAdapter> m_maplike;
 };
 
 } // namespace WebCore

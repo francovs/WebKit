@@ -37,6 +37,7 @@
 #include "Document.h"
 #include "DocumentLoader.h"
 #include "Event.h"
+#include "EventCounts.h"
 #include "EventLoop.h"
 #include "EventNames.h"
 #include "ExceptionOr.h"
@@ -53,6 +54,7 @@
 #include "PerformanceUserTiming.h"
 #include "ResourceResponse.h"
 #include "ScriptExecutionContext.h"
+#include <optional>
 #include <ranges>
 #include <wtf/SystemTracing.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -157,6 +159,20 @@ PerformanceTiming* Performance::timing()
     if (!m_timing)
         m_timing = PerformanceTiming::create(downcast<Document>(*scriptExecutionContext()).window());
     return m_timing.get();
+}
+
+EventCounts* Performance::eventCounts()
+{
+    if (!is<Document>(scriptExecutionContext()))
+        return nullptr;
+
+    ASSERT(isMainThread());
+    // TODO: once event-timing is no longer gated by a feature flag, remove
+    // the lazy initialization and make m_eventCounts no longer mutable.
+    if (!m_eventCounts) {
+        m_eventCounts = EventCounts::create();
+    }
+    return m_eventCounts.get();
 }
 
 Vector<Ref<PerformanceEntry>> Performance::getEntries() const
@@ -272,6 +288,41 @@ void Performance::reportFirstContentfulPaint()
     ASSERT(!m_firstContentfulPaint);
     m_firstContentfulPaint = PerformancePaintTiming::createFirstContentfulPaint(now());
     queueEntry(*m_firstContentfulPaint);
+}
+
+Performance::EventTimingEnqueuerScopeGuard::EventTimingEnqueuerScopeGuard(const Event &event, Performance& parent)
+: m_parent(&parent)
+{
+    if (event.isTrusted() && EventCounts::IsCandidateForEventTiming(event.type()))
+        m_eventType = event.type();
+}
+
+Performance::EventTimingEnqueuerScopeGuard::~EventTimingEnqueuerScopeGuard()
+{
+    if (m_eventType)
+    m_parent->m_eventTimingEntries.push_back(m_eventType.value());
+}
+
+Performance::EventTimingEnqueuerScopeGuard::EventTimingEnqueuerScopeGuard(Performance::EventTimingEnqueuerScopeGuard &&rhs)
+: m_eventType(rhs.m_eventType)
+, m_parent(rhs.m_parent)
+{
+    rhs.m_eventType = std::nullopt;
+}
+
+Performance::EventTimingEnqueuerScopeGuard& Performance::EventTimingEnqueuerScopeGuard::operator=(EventTimingEnqueuerScopeGuard&& rhs)
+{
+    std::swap(*this, rhs);
+    return *this;
+}
+
+void Performance::dispatchEventTimingEntries()
+{
+    for (auto e : m_eventTimingEntries) {
+        eventCounts()->inc(e);
+    }
+    m_eventTimingEntries.clear();
+    // TODO: dispatch to performance observers
 }
 
 void Performance::addNavigationTiming(DocumentLoader& documentLoader, Document& document, CachedResource& resource, const DocumentLoadTiming& timing, const NetworkLoadMetrics& metrics)

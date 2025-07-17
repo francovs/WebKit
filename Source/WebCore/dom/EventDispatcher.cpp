@@ -45,6 +45,7 @@
 #include "ShadowRoot.h"
 #include "TextEvent.h"
 #include "TouchEvent.h"
+#include <page/Performance.h>
 #include <wtf/text/TextStream.h>
 
 namespace WebCore {
@@ -172,6 +173,11 @@ void EventDispatcher::dispatchEvent(Node& node, Event& event)
     Ref protectedNode { node };
     Ref document = node.document();
     RefPtr protectedView { document->view() };
+
+    std::optional<Performance::EventTimingEnqueuerScopeGuard> eventTimingEnqueuer;
+    if (document->settings().isEventTimingEnabled() && document->window()) {
+        eventTimingEnqueuer = Performance::EventTimingEnqueuerScopeGuard(event, document->window()->performance());
+    }
 
     auto typeInfo = eventNames().typeInfoForEvent(event.type());
     bool shouldDispatchEventToScripts = hasRelevantEventListener(document, event);

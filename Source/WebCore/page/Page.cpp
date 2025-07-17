@@ -2332,6 +2332,10 @@ void Page::doAfterUpdateRendering()
     });
 
     forEachRenderableDocument([] (Document& document) {
+        document.dispatchEventTimingEntriesIfNeeded();
+    });
+
+    forEachRenderableDocument([] (Document& document) {
         document.selection().updateAppearanceAfterUpdatingRendering();
     });
 

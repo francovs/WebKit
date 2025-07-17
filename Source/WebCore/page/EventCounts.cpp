@@ -31,14 +31,135 @@
 #include "config.h"
 #include "EventCounts.h"
 
+#include "EventNames.h"
+#include "bindings/IDLTypes.h"
 #include <bindings/js/JSDOMMapLike.h>
+#include "wtf/Assertions.h"
+#include "wtf/HashSet.h"
+#include <initializer_list>
+
 
 namespace WebCore {
-    
+
+EventCounts::EventCounts()
+: m_counts{
+    {eventNames().auxclickEvent              , 0},
+    {eventNames().clickEvent                 , 0},
+    {eventNames().contextmenuEvent           , 0},
+    {eventNames().dblclickEvent              , 0},
+    {eventNames().mousedownEvent             , 0},
+    {eventNames().mouseenterEvent            , 0},
+    {eventNames().mouseleaveEvent            , 0},
+    {eventNames().mouseoutEvent              , 0},
+    {eventNames().mouseoverEvent             , 0},
+    {eventNames().mouseupEvent               , 0}, 
+    {eventNames().pointeroverEvent          , 0},
+    {eventNames().pointerenterEvent         , 0},
+    {eventNames().pointerdownEvent          , 0},
+    {eventNames().pointerupEvent            , 0},
+    {eventNames().pointercancelEvent        , 0},
+    {eventNames().pointeroutEvent           , 0},
+    {eventNames().pointerleaveEvent         , 0},
+    {eventNames().gotpointercaptureEvent    , 0},
+    {eventNames().lostpointercaptureEvent   , 0},
+    {eventNames().touchstartEvent           , 0},
+    {eventNames().touchendEvent             , 0},
+    {eventNames().touchcancelEvent          , 0},
+    {eventNames().keydownEvent              , 0},
+    {eventNames().keypressEvent             , 0},
+    {eventNames().keyupEvent                , 0},
+    {eventNames().beforeinputEvent          , 0},
+    {eventNames().inputEvent                , 0},
+    {eventNames().compositionstartEvent     , 0},
+    {eventNames().compositionupdateEvent    , 0},
+    {eventNames().compositionendEvent       , 0},
+    {eventNames().dragstartEvent            , 0},
+    {eventNames().dragendEvent              , 0},
+    {eventNames().dragenterEvent            , 0},
+    {eventNames().dragleaveEvent            , 0},
+    {eventNames().dragoverEvent             , 0},
+    {eventNames().dropEvent                 , 0}
+} { }
+
+
+EventCounts::~EventCounts() { }
+
 void EventCounts::initializeMapLike(DOMMapAdapter& map)
 {
-    (void) map;
-    return;
+    ALWAYS_LOG_WITH_STREAM(stream << "Initializing EventCount maplike");
+    // TODO: our maplike implementation causes a new JS object to be created
+    // the first time the EventCounts object is accessed through javascript.
+    // This new object has its own, separate key-value storage. This is bad
+    // because it requires incrementing both m_counts and the JS-accessible
+    // m_maplike independently.
+    //
+    // Ideally, maplike would simply proxy reads to m_counts instead.
+    ASSERT(!m_maplike);
+    m_maplike = std::make_unique<DOMMapAdapter>(map);
+    for (auto& kv : m_counts) {
+        map.set<IDLDOMString, IDLUnsignedLongLong>(String(kv.key), kv.value);
+    }
+}
+
+void EventCounts::inc(const AtomString &eventType)
+{
+    ASSERT(m_counts.contains(eventType));
+    unsigned newCount = m_counts.get(eventType) + 1;
+    m_counts.set(eventType, newCount);
+    /*
+    // I am not 100% sure the DOMMapAdapter::m_backingMap object's lifetime
+    // is tied to the EventCounts object that caused it to be initialized. If it
+    // isn't, using m_maplike as follows could cause use-after-free:
+    //
+    // Update: this absolutely corrupts memory, probably because the JSObject
+    // gets relocated and m_backingMap becomes stale?
+    if (m_maplike) {
+        m_maplike->set<IDLDOMString, IDLUnsignedLongLong>(String(eventType), newCount);
+    }
+    */
+}
+
+bool EventCounts::IsCandidateForEventTiming(const AtomString &eventType)
+{
+    static NeverDestroyed<HashSet<AtomString>> countedEvents(std::initializer_list<AtomString>{
+        eventNames().auxclickEvent,
+        eventNames().clickEvent,
+        eventNames().contextmenuEvent,
+        eventNames().dblclickEvent,
+        eventNames().mousedownEvent,
+        eventNames().mouseenterEvent,
+        eventNames().mouseleaveEvent,
+        eventNames().mouseoutEvent,
+        eventNames().mouseoverEvent,
+        eventNames().mouseupEvent, 
+        eventNames().pointeroverEvent,
+        eventNames().pointerenterEvent,
+        eventNames().pointerdownEvent,
+        eventNames().pointerupEvent,
+        eventNames().pointercancelEvent,
+        eventNames().pointeroutEvent,
+        eventNames().pointerleaveEvent,
+        eventNames().gotpointercaptureEvent,
+        eventNames().lostpointercaptureEvent,
+        eventNames().touchstartEvent,
+        eventNames().touchendEvent,
+        eventNames().touchcancelEvent,
+        eventNames().keydownEvent,
+        eventNames().keypressEvent,
+        eventNames().keyupEvent,
+        eventNames().beforeinputEvent,
+        eventNames().inputEvent,
+        eventNames().compositionstartEvent,
+        eventNames().compositionupdateEvent,
+        eventNames().compositionendEvent,
+        eventNames().dragstartEvent,
+        eventNames().dragendEvent,
+        eventNames().dragenterEvent,
+        eventNames().dragleaveEvent,
+        eventNames().dragoverEvent,
+        eventNames().dropEvent
+    });
+    return countedEvents->contains(eventType);
 }
 
 } // namespace WebCore

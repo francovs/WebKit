@@ -82,7 +82,7 @@ public:
 
     PerformanceNavigation* navigation();
     PerformanceTiming* timing();
-    EventCounts* eventCounts() {return nullptr;}
+    EventCounts* eventCounts();
 
     unsigned interactionCount() {return 0;}
 
@@ -106,6 +106,20 @@ public:
     void addResourceTiming(ResourceTiming&&);
 
     void reportFirstContentfulPaint();
+
+    class EventTimingEnqueuerScopeGuard final {  // Enqueues to m_eventTimingEntries on destruction
+    public:
+        EventTimingEnqueuerScopeGuard(const Event &event, Performance& parent);
+        ~EventTimingEnqueuerScopeGuard();
+        EventTimingEnqueuerScopeGuard           (const EventTimingEnqueuerScopeGuard &rhs) = delete;
+        EventTimingEnqueuerScopeGuard& operator=(const EventTimingEnqueuerScopeGuard&)     = delete;
+        EventTimingEnqueuerScopeGuard           (EventTimingEnqueuerScopeGuard &&rhs);
+        EventTimingEnqueuerScopeGuard& operator=(EventTimingEnqueuerScopeGuard&&);
+    private:
+        std::optional<AtomString> m_eventType;
+        Performance *m_parent;
+    };
+    void dispatchEventTimingEntries();
 
     void removeAllObservers();
     void registerPerformanceObserver(PerformanceObserver&);
@@ -145,10 +159,14 @@ private:
 
     mutable RefPtr<PerformanceNavigation> m_navigation;
     mutable RefPtr<PerformanceTiming> m_timing;
+    mutable RefPtr<EventCounts> m_eventCounts;
 
     // https://w3c.github.io/resource-timing/#sec-extensions-performance-interface recommends initial buffer size of 250.
     Vector<Ref<PerformanceEntry>> m_resourceTimingBuffer;
     unsigned m_resourceTimingBufferSize { 250 };
+
+    // Event timing:
+    std::vector<AtomString> m_eventTimingEntries;
 
     Timer m_resourceTimingBufferFullTimer;
     Vector<Ref<PerformanceEntry>> m_backupResourceTimingBuffer;
