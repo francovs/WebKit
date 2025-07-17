@@ -34,6 +34,8 @@
 #include "EventNames.h"
 #include "bindings/IDLTypes.h"
 #include <bindings/js/JSDOMMapLike.h>
+#include <JavaScriptCore/JSObject.h>
+#include <JavaScriptCore/Strong.h>
 #include "wtf/Assertions.h"
 #include "wtf/HashSet.h"
 #include <initializer_list>
@@ -95,7 +97,8 @@ void EventCounts::initializeMapLike(DOMMapAdapter& map)
     //
     // Ideally, maplike would simply proxy reads to m_counts instead.
     ASSERT(!m_maplike);
-    m_maplike = std::make_unique<DOMMapAdapter>(map);
+    m_maplike = std::make_unique<JSC::Strong<JSC::JSObject>>(map.m_backingMap.vm(), &map.m_backingMap);
+
     for (auto& kv : m_counts) {
         map.set<IDLDOMString, IDLUnsignedLongLong>(String(kv.key), kv.value);
     }
@@ -106,17 +109,10 @@ void EventCounts::inc(const AtomString &eventType)
     ASSERT(m_counts.contains(eventType));
     unsigned newCount = m_counts.get(eventType) + 1;
     m_counts.set(eventType, newCount);
-    /*
-    // I am not 100% sure the DOMMapAdapter::m_backingMap object's lifetime
-    // is tied to the EventCounts object that caused it to be initialized. If it
-    // isn't, using m_maplike as follows could cause use-after-free:
-    //
-    // Update: this absolutely corrupts memory, probably because the JSObject
-    // gets relocated and m_backingMap becomes stale?
     if (m_maplike) {
-        m_maplike->set<IDLDOMString, IDLUnsignedLongLong>(String(eventType), newCount);
+        auto adapter = DOMMapAdapter(*m_maplike->get()->globalObject(), *m_maplike->get());
+        adapter.set<IDLDOMString, IDLUnsignedLongLong>(String(eventType), newCount);
     }
-    */
 }
 
 bool EventCounts::IsCandidateForEventTiming(const AtomString &eventType)

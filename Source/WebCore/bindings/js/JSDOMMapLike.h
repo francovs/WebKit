@@ -62,6 +62,7 @@ public:
 private:
     JSC::JSGlobalObject& m_lexicalGlobalObject;
     JSC::JSObject& m_backingMap;
+    friend class EventCounts;
 };
 
 inline DOMMapAdapter::DOMMapAdapter(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSObject& backingMap)

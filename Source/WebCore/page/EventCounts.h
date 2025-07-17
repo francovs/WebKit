@@ -35,6 +35,8 @@
 #include "wtf/text/AtomString.h"
 #include <wtf/RefCounted.h>
 #include <memory>
+#include <JavaScriptCore/JSObject.h>
+#include <JavaScriptCore/Strong.h>
 
 namespace WebCore {
 
@@ -55,7 +57,7 @@ public:
 private:
     EventCounts();
     HashMap<String, unsigned> m_counts;
-    std::unique_ptr<DOMMapAdapter> m_maplike;
+    std::unique_ptr<JSC::Strong<JSC::JSObject>> m_maplike;
 };
 
 } // namespace WebCore
