@@ -59,6 +59,7 @@
 #include "DocumentLoader.h"
 #include "Editor.h"
 #include "Element.h"
+#include "EventCounts.h"
 #include "EventHandler.h"
 #include "EventListener.h"
 #include "EventLoop.h"
@@ -139,6 +140,7 @@
 #include <JavaScriptCore/ScriptCallStackFactory.h>
 #include <algorithm>
 #include <memory>
+#include <wtf/Assertions.h>
 #include <wtf/Language.h>
 #include <wtf/MainThread.h>
 #include <wtf/MathExtras.h>
@@ -790,6 +792,7 @@ Performance& LocalDOMWindow::performance() const
     if (!m_performance) {
         RefPtr documentLoader = document() ? document()->loader() : nullptr;
         auto timeOrigin = documentLoader ? documentLoader->timing().timeOrigin() : MonotonicTime::now();
+        ASSERT(protectedDocument());
         m_performance = Performance::create(protectedDocument().get(), timeOrigin);
     }
     ASSERT(m_performance->scriptExecutionContext() == document());
@@ -2455,6 +2458,49 @@ void LocalDOMWindow::finishedLoading()
         if (RefPtr loader = localFrame()->loader().activeDocumentLoader(); !loader || loader->mainDocumentError().isNull())
             print();
     }
+}
+
+std::optional<LocalDOMWindow::PerformanceEventTimingCandidate> LocalDOMWindow::initializeEventTimingEntry(const Event& event, EventType type)
+{
+    if (!event.isTrusted() || !EventCounts::IsCounted(type))
+        return std::nullopt;
+
+    LOG_WITH_STREAM(PerformanceTimeline, stream << "Initializing event timing entry of type " << event.type());
+
+    // event.timeStamp() may not be reliable (wall clock):
+    auto startTime = std::min(event.timeStamp(), MonotonicTime::now());
+    return PerformanceEventTimingCandidate {
+        .type = type,
+        .cancelable = event.cancelable(),
+        .startTime =  performance().relativeTimeFromTimeOriginInReducedResolution(startTime),
+        .processingStart = performance().now(),
+        .processingEnd = 0,
+        .target = nullptr
+    };
+}
+
+void LocalDOMWindow::finalizeEventTimingEntry(const std::optional<PerformanceEventTimingCandidate>& entry, RefPtr<EventTarget> target)
+{
+    if (!entry)
+        return;
+
+    m_performanceEventTimingCandidates.append(entry.value());
+    m_performanceEventTimingCandidates.last().target = target;
+    m_performanceEventTimingCandidates.last().processingEnd = performance().now();
+}
+
+void LocalDOMWindow::dispatchPendingEventTimingEntries()
+{
+    if (m_performanceEventTimingCandidates.isEmpty())
+        return;
+
+    LOG_WITH_STREAM(PerformanceTimeline, stream << "Dispatching " << m_performanceEventTimingCandidates.size() << " event timing entries");
+
+    for (auto &e : m_performanceEventTimingCandidates) {
+        performance().eventCounts()->add(e.type);
+        // TODO: dispatch to performance observers
+    }
+    m_performanceEventTimingCandidates.clear();
 }
 
 void LocalDOMWindow::setLocation(LocalDOMWindow& activeWindow, const URL& completedURL, NavigationHistoryBehavior historyHandling, SetLocationLocking locking, CanNavigateState navigationState)
