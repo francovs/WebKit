@@ -2460,17 +2460,14 @@ void LocalDOMWindow::finishedLoading()
     }
 }
 
-std::optional<LocalDOMWindow::PerformanceEventTimingCandidate> LocalDOMWindow::initializeEventTimingEntry(const Event& event, EventType type)
+LocalDOMWindow::PerformanceEventTimingCandidate LocalDOMWindow::initializeEventTimingEntry(const Event& event, EventTypeInfo typeInfo)
 {
-    if (!event.isTrusted() || !EventCounts::IsCounted(type))
-        return std::nullopt;
-
     LOG_WITH_STREAM(PerformanceTimeline, stream << "Initializing event timing entry of type " << event.type());
-
+    // FIXME: implement InteractionId logic
     // event.timeStamp() may not be reliable (wall clock):
     auto startTime = std::min(event.timeStamp(), MonotonicTime::now());
     return PerformanceEventTimingCandidate {
-        .type = type,
+        .typeInfo = typeInfo,
         .cancelable = event.cancelable(),
         .startTime =  performance().relativeTimeFromTimeOriginInReducedResolution(startTime),
         .processingStart = performance().now(),
@@ -2495,10 +2492,12 @@ void LocalDOMWindow::dispatchPendingEventTimingEntries()
         return;
 
     LOG_WITH_STREAM(PerformanceTimeline, stream << "Dispatching " << m_performanceEventTimingCandidates.size() << " event timing entries");
-
     for (auto &e : m_performanceEventTimingCandidates) {
-        performance().eventCounts()->add(e.type);
-        // TODO: dispatch to performance observers
+        performance().eventCounts()->add(e.typeInfo.type());
+        // FIXME: calculate duration and ignore if < 16ms
+        // FIXME: dispatch to relevant performance observers
+        // FIXME: first-input handling
+        // FIXME: if duration > 104ms and buffer is not full, add to buffer
     }
     m_performanceEventTimingCandidates.clear();
 }

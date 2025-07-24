@@ -288,7 +288,7 @@ public:
     // EventTiming API
     struct PerformanceEventTimingCandidate {
 
-        EventType type;
+        EventTypeInfo typeInfo;
         // Currently unused, but required for full event timing implementation:
         bool cancelable;
         DOMHighResTimeStamp startTime;
@@ -296,7 +296,7 @@ public:
         DOMHighResTimeStamp processingEnd;
         RefPtr<EventTarget> target;
     };
-    std::optional<PerformanceEventTimingCandidate> initializeEventTimingEntry(const Event&, EventType);
+    PerformanceEventTimingCandidate initializeEventTimingEntry(const Event&, EventTypeInfo);
     void finalizeEventTimingEntry(const std::optional<PerformanceEventTimingCandidate>&, RefPtr<EventTarget>);
     void dispatchPendingEventTimingEntries();
 

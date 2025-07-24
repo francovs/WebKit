@@ -179,8 +179,8 @@ void EventDispatcher::dispatchEvent(Node& node, Event& event)
 
     RefPtr window = document->window();
     std::optional<LocalDOMWindow::PerformanceEventTimingCandidate> pendingEventTiming;
-    if (window && document->settings().eventTimingEnabled())
-        pendingEventTiming = window->initializeEventTimingEntry(event, typeInfo.type());
+    if (typeInfo.isInCategory(EventCategory::EventTimingEligible) && window && document->settings().eventTimingEnabled() && event.isTrusted())
+        pendingEventTiming = window->initializeEventTimingEntry(event, typeInfo);
 
     bool targetOrRelatedTargetIsInShadowTree = node.isInShadowTree() || isInShadowTree(event.relatedTarget());
     // FIXME: We should also check touch target list.

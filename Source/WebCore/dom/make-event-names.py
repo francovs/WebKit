@@ -155,6 +155,12 @@ public:''')
 ''')
         writeln(f'    std::array<const AtomString, {len(event_names_input)}> allEventNames() const;')
         writeln(f'    WTF::HashSet<AtomString> allEventHandlerNames() const;')
+        writeln( '    static constexpr std::array TimedEvents {')
+        for name in category_map['EventTimingEligible']:
+            # FIXME: add include guard
+            writeln(f'        EventType::{name},')
+            # FIXME: add include guard
+        writeln( '    };')
         writeln('''
 private:
     EventNames();
