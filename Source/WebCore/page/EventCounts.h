@@ -26,21 +26,35 @@
 
 #pragma once
 
+#include "EventNames.h"
+#include "ScriptWrappable.h"
+#include <memory>
 #include <wtf/RefCounted.h>
+
+namespace JSC {
+class JSGlobalObject;
+class JSObject;
+}
 
 namespace WebCore {
 
 class DOMMapAdapter;
 
-class EventCounts final: public RefCounted<EventCounts> {
+class EventCounts final: public ScriptWrappable, public RefCounted<EventCounts> {
+WTF_MAKE_TZONE_OR_ISO_ALLOCATED_EXPORT(EventCounts, WEBCORE_EXPORT);
+
 public:
-
-    static Ref<EventCounts> create() { return adoptRef(*new EventCounts()); }
-
+    static Ref<EventCounts> create() { return adoptRef(*new EventCounts); }
     void initializeMapLike(DOMMapAdapter&);
+    void add(EventType);
 
 private:
     EventCounts();
+    std::array<unsigned, EventNames::TimedEvents.size()> m_counts { };
+
+    // Caches event names:
+    using AllEventNamesType = decltype(eventNames().allEventNames());
+    std::unique_ptr<AllEventNamesType> allEventNames;
 };
 
 } // namespace WebCore

@@ -26,13 +26,48 @@
 #include "config.h"
 #include "EventCounts.h"
 
+#include "IDLTypes.h"
 #include "JSDOMMapLike.h"
+#include "bindings/js/WebCoreJSClientData.h"
+#include <algorithm>
 
 namespace WebCore {
 
-void EventCounts::initializeMapLike(DOMMapAdapter&)
+WTF_MAKE_TZONE_OR_ISO_ALLOCATED_IMPL(EventCounts);
+
+EventCounts::EventCounts()
+{ }
+
+void EventCounts::add(EventType type)
 {
-    return;
+    size_t index = std::ranges::lower_bound(EventNames::TimedEvents, type) - EventNames::TimedEvents.begin();
+    ASSERT(index < m_counts.size());
+    ++m_counts[index];
+
+    auto wrapperObject = wrapper();
+    if (wrapperObject) {
+        auto& vm = wrapperObject->vm();
+        auto backingMap = wrapperObject->getDirect(vm, builtinNames(vm).backingMapPrivateName());
+        ASSERT(backingMap);
+        auto mapAdapter = DOMMapAdapter(*wrapperObject->globalObject(), *JSC::asObject(backingMap));
+        if (!allEventNames)
+            allEventNames = std::make_unique<AllEventNamesType>(eventNames().allEventNames());
+        size_t typeAsIndex = static_cast<size_t>(EventNames::TimedEvents[index]) - 1;
+        mapAdapter.set<IDLDOMString, IDLUnsignedLongLong>((*allEventNames)[typeAsIndex], m_counts[index]);
+    }
+}
+
+void EventCounts::initializeMapLike(DOMMapAdapter& map)
+{
+    if (!allEventNames)
+        allEventNames = std::make_unique<AllEventNamesType>(eventNames().allEventNames());
+
+    for (size_t index = 0; index < EventNames::TimedEvents.size(); ++index) {
+        // Subtract 1 to account for EventType::custom
+        size_t typeAsIndex = static_cast<size_t>(EventNames::TimedEvents[index]) - 1;
+        ASSERT(typeAsIndex < allEventNames->size());
+        map.set<IDLDOMString, IDLUnsignedLongLong>((*allEventNames)[typeAsIndex], m_counts[index]);
+    }
 }
 
 } // namespace WebCore

@@ -155,6 +155,14 @@ public:''')
 ''')
         writeln(f'    std::array<const AtomString, {len(event_names_input)}> allEventNames() const;')
         writeln(f'    WTF::HashSet<AtomString> allEventHandlerNames() const;')
+        writeln(f'    static constexpr std::array TimedEvents {{')
+        for name in category_map['EventTimingEligible']:
+            entry = event_names_input[name]
+            conditional = entry.get('conditional', None)
+            writeln(f'#if {conditional}') if conditional else None
+            writeln(f'        EventType::{name},')
+            writeln(f'#endif') if conditional else None
+        writeln(f'    }};')
         writeln('''
 private:
     EventNames();

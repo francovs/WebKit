@@ -2333,6 +2333,10 @@ void Page::doAfterUpdateRendering()
         document.enqueuePaintTimingEntryIfNeeded();
     });
 
+    forEachDocument([] (Document& document) {
+        document.enqueueEventTimingEntriesIfNeeded();
+    });
+
     forEachRenderableDocument([] (Document& document) {
         document.selection().updateAppearanceAfterUpdatingRendering();
     });
