@@ -29,6 +29,7 @@
 #include "IDLTypes.h"
 #include "JSDOMMapLike.h"
 #include "bindings/js/WebCoreJSClientData.h"
+#include "wtf/StdLibExtras.h"
 #include <algorithm>
 
 namespace WebCore {
@@ -51,7 +52,7 @@ void EventCounts::add(EventType type)
         ASSERT(backingMap);
         auto mapAdapter = DOMMapAdapter(*wrapperObject->globalObject(), *JSC::asObject(backingMap));
         if (!allEventNames)
-            allEventNames = std::make_unique<AllEventNamesType>(eventNames().allEventNames());
+            allEventNames = WTF::makeUnique<Vector<const AtomString>>(eventNames().allEventNames());
         size_t typeAsIndex = static_cast<size_t>(EventNames::TimedEvents[index]) - 1;
         mapAdapter.set<IDLDOMString, IDLUnsignedLongLong>((*allEventNames)[typeAsIndex], m_counts[index]);
     }
@@ -60,7 +61,7 @@ void EventCounts::add(EventType type)
 void EventCounts::initializeMapLike(DOMMapAdapter& map)
 {
     if (!allEventNames)
-        allEventNames = std::make_unique<AllEventNamesType>(eventNames().allEventNames());
+        allEventNames = WTF::makeUnique<Vector<const AtomString>>(eventNames().allEventNames());
 
     for (size_t index = 0; index < EventNames::TimedEvents.size(); ++index) {
         // Subtract 1 to account for EventType::custom

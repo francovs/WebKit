@@ -30,6 +30,7 @@
 #include "ScriptWrappable.h"
 #include <memory>
 #include <wtf/RefCounted.h>
+#include <wtf/Vector.h>
 
 namespace JSC {
 class JSGlobalObject;
@@ -53,8 +54,7 @@ private:
     std::array<unsigned, EventNames::TimedEvents.size()> m_counts { };
 
     // Caches event names:
-    using AllEventNamesType = decltype(eventNames().allEventNames());
-    std::unique_ptr<AllEventNamesType> allEventNames;
+    std::unique_ptr<Vector<const AtomString>> allEventNames;
 };
 
 } // namespace WebCore
