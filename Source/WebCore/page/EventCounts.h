@@ -28,8 +28,6 @@
 
 #include "EventNames.h"
 #include "ScriptWrappable.h"
-#include <memory>
-#include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 
 namespace JSC {
@@ -41,20 +39,22 @@ namespace WebCore {
 
 class DOMMapAdapter;
 
-class EventCounts final: public ScriptWrappable, public RefCounted<EventCounts> {
-WTF_MAKE_TZONE_OR_ISO_ALLOCATED_EXPORT(EventCounts, WEBCORE_EXPORT);
-
+class EventCounts final: public ScriptWrappable {
 public:
-    static Ref<EventCounts> create() { return adoptRef(*new EventCounts); }
+    // No refcounting: the wrapper doesn't depend on the C++ object at
+    // all after creation
+    EventCounts();
+    static void ref() { }
+    static void deref() { }
     void initializeMapLike(DOMMapAdapter&);
     void add(EventType);
 
 private:
-    EventCounts();
     std::array<unsigned, EventNames::TimedEvents.size()> m_counts { };
 
     // Caches event names:
-    std::unique_ptr<Vector<const AtomString>> allEventNames;
+    Vector<AtomString> m_allEventNames;
+    void ensureAllEventNames();
 };
 
 } // namespace WebCore

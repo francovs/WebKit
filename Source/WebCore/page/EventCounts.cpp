@@ -29,12 +29,9 @@
 #include "IDLTypes.h"
 #include "JSDOMMapLike.h"
 #include "bindings/js/WebCoreJSClientData.h"
-#include "wtf/StdLibExtras.h"
 #include <algorithm>
 
 namespace WebCore {
-
-WTF_MAKE_TZONE_OR_ISO_ALLOCATED_IMPL(EventCounts);
 
 EventCounts::EventCounts()
 { }
@@ -47,28 +44,34 @@ void EventCounts::add(EventType type)
 
     auto wrapperObject = wrapper();
     if (wrapperObject) {
+        ensureAllEventNames();
         auto& vm = wrapperObject->vm();
+        Locker<JSC::JSLock> lock {vm.apiLock()};
         auto backingMap = wrapperObject->getDirect(vm, builtinNames(vm).backingMapPrivateName());
         ASSERT(backingMap);
         auto mapAdapter = DOMMapAdapter(*wrapperObject->globalObject(), *JSC::asObject(backingMap));
-        if (!allEventNames)
-            allEventNames = WTF::makeUnique<Vector<const AtomString>>(eventNames().allEventNames());
         size_t typeAsIndex = static_cast<size_t>(EventNames::TimedEvents[index]) - 1;
-        mapAdapter.set<IDLDOMString, IDLUnsignedLongLong>((*allEventNames)[typeAsIndex], m_counts[index]);
+        mapAdapter.set<IDLDOMString, IDLUnsignedLongLong>(m_allEventNames[typeAsIndex], m_counts[index]);
     }
 }
 
 void EventCounts::initializeMapLike(DOMMapAdapter& map)
 {
-    if (!allEventNames)
-        allEventNames = WTF::makeUnique<Vector<const AtomString>>(eventNames().allEventNames());
-
+    ensureAllEventNames();
     for (size_t index = 0; index < EventNames::TimedEvents.size(); ++index) {
         // Subtract 1 to account for EventType::custom
         size_t typeAsIndex = static_cast<size_t>(EventNames::TimedEvents[index]) - 1;
-        ASSERT(typeAsIndex < allEventNames->size());
-        map.set<IDLDOMString, IDLUnsignedLongLong>((*allEventNames)[typeAsIndex], m_counts[index]);
+        ASSERT(typeAsIndex < m_allEventNames.size());
+        map.set<IDLDOMString, IDLUnsignedLongLong>(m_allEventNames[typeAsIndex], m_counts[index]);
     }
+}
+
+void EventCounts::ensureAllEventNames()
+{
+    if (m_allEventNames.size())
+        return;
+
+    m_allEventNames = eventNames().allEventNames();
 }
 
 } // namespace WebCore

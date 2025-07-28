@@ -54,6 +54,7 @@
 #include "PerformanceUserTiming.h"
 #include "ResourceResponse.h"
 #include "ScriptExecutionContext.h"
+#include "wtf/StdLibExtras.h"
 #include <ranges>
 #include <wtf/SystemTracing.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -152,7 +153,7 @@ EventCounts* Performance::eventCounts()
 
     ASSERT(isMainThread());
     if (!m_eventCounts)
-        m_eventCounts = EventCounts::create();
+        m_eventCounts = std::make_unique<EventCounts>();
 
     return m_eventCounts.get();
 }
@@ -279,7 +280,7 @@ void Performance::countEvent(EventType type)
 {
     ASSERT(isMainThread());
     if (!m_eventCounts)
-        m_eventCounts = EventCounts::create();
+        m_eventCounts = std::make_unique<EventCounts>();
 
     m_eventCounts->add(type);
 }
