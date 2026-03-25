@@ -49,6 +49,12 @@ inline bool operator==(const UniqueRef<ResolvedColor>& a, const UniqueRef<Resolv
     return a.get() == b.get();
 }
 
+// InlinedResolvedColor stores an inline WebCore::Color (sRGB uint8)
+// packed into 48 bits via CompactVariantTraits, avoiding a heap allocation.
+// For out-of-line colors (wide-gamut, float components), UniqueRef<ResolvedColor>
+// is used instead.
+using InlinedResolvedColor = WebCore::InlineColor;
+
 Color toStyleColor(const CSS::ResolvedColor&, ColorResolutionState&);
 
 inline WebCore::Color resolveColor(const ResolvedColor& absoluteColor, const WebCore::Color&)

@@ -72,32 +72,36 @@ Color::Color(CSS::Keyword::Currentcolor)
 }
 
 Color::Color(WebCore::Color color)
-    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WTF::move(color) }) }
+    : value { color.tryGetAsPackedInline()
+        ? ColorKind { InlinedResolvedColor { color } }
+        : ColorKind { makeUniqueRef<ResolvedColor>(ResolvedColor { WTF::move(color) }) } }
 {
 }
 
 Color::Color(SRGBA<uint8_t> color)
-    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color { color } }) }
+    : value { InlinedResolvedColor { WebCore::Color { color } } }
 {
 }
 
 Color::Color(CSS::Keyword::Transparent)
-    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::transparentBlack }) }
+    : value { InlinedResolvedColor { WebCore::Color { WebCore::Color::transparentBlack } } }
 {
 }
 
 Color::Color(CSS::Keyword::Black)
-    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::black }) }
+    : value { InlinedResolvedColor { WebCore::Color { WebCore::Color::black } } }
 {
 }
 
 Color::Color(CSS::Keyword::White)
-    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::white }) }
+    : value { InlinedResolvedColor { WebCore::Color { WebCore::Color::white } } }
 {
 }
 
 Color::Color(ResolvedColor&& color)
-    : value { makeUniqueRef<ResolvedColor>(WTF::move(color)) }
+    : value { color.color.tryGetAsPackedInline()
+        ? ColorKind { InlinedResolvedColor { color.color } }
+        : ColorKind { makeUniqueRef<ResolvedColor>(WTF::move(color)) } }
 {
 }
 
@@ -207,6 +211,7 @@ Color::Color(const Color& other)
     other.value.switchOn(
         [&](const EmptyToken& t) { value = t; },
         [&](const CurrentColor& c) { value = c; },
+        [&](const InlinedResolvedColor& inlined) { value = inlined; },
         [&]<typename T>(const UniqueRef<T>& color) { value = makeUniqueRef<T>(color.get()); }
     );
 }
@@ -299,18 +304,19 @@ bool Color::isRelativeColor() const
 
 bool Color::isResolvedColor() const
 {
-    return value.holdsAlternative<UniqueRef<ResolvedColor>>();
+    return value.holdsAlternative<InlinedResolvedColor>() || value.holdsAlternative<UniqueRef<ResolvedColor>>();
 }
 
-const WebCore::Color& Color::resolvedColor() const
+WebCore::Color Color::resolvedColor() const
 {
     ASSERT(isResolvedColor());
-    const WebCore::Color* result = nullptr;
-    switchOn(
-        [&](const ResolvedColor& resolved) { result = &resolved.color; },
+    WebCore::Color result;
+    value.switchOn(
+        [&](const InlinedResolvedColor& inlined) { result = inlined.toColor(); },
+        [&](const UniqueRef<ResolvedColor>& resolved) { result = resolved.get().color; },
         [](const auto&) { RELEASE_ASSERT_NOT_REACHED(); }
     );
-    return *result;
+    return result;
 }
 
 bool Color::isKnownTransparent() const

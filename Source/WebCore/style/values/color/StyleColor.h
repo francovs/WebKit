@@ -72,6 +72,7 @@ private:
     using ColorKind = CompactVariant<
         EmptyToken,
         CurrentColor,
+        InlinedResolvedColor,
         UniqueRef<ResolvedColor>,
         UniqueRef<ColorLayers>,
         UniqueRef<ColorMix>,
@@ -150,7 +151,7 @@ public:
     bool NODELETE isRelativeColor() const;
 
     bool NODELETE isResolvedColor() const;
-    const WebCore::Color& resolvedColor() const;
+    WebCore::Color resolvedColor() const;
 
     WEBCORE_EXPORT WebCore::Color resolveColor(const WebCore::Color& currentColor) const;
 
@@ -224,6 +225,10 @@ template<typename... F> decltype(auto) Color::switchOn(F&&... f) const
         },
         [&](const CurrentColor& currentColor) -> ResultType {
             return visitor(currentColor);
+        },
+        [&](const InlinedResolvedColor& inlined) -> ResultType {
+            ResolvedColor resolved { inlined.toColor() };
+            return visitor(resolved);
         },
         [&]<typename T>(const UniqueRef<T>& color) -> ResultType {
             return visitor(color.get());
