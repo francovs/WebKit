@@ -44,6 +44,11 @@ struct ResolvedColor {
     bool operator==(const ResolvedColor&) const = default;
 };
 
+inline bool operator==(const UniqueRef<ResolvedColor>& a, const UniqueRef<ResolvedColor>& b)
+{
+    return a.get() == b.get();
+}
+
 Color toStyleColor(const CSS::ResolvedColor&, ColorResolutionState&);
 
 inline WebCore::Color resolveColor(const ResolvedColor& absoluteColor, const WebCore::Color&)

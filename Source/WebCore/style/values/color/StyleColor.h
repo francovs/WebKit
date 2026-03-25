@@ -39,6 +39,7 @@
 #include <WebCore/StyleColorOptions.h>
 #include <WebCore/StyleCurrentColor.h>
 #include <WebCore/StyleResolvedColor.h>
+#include <wtf/CompactVariant.h>
 #include <wtf/Markable.h>
 #include <wtf/OptionSet.h>
 #include <wtf/UniqueRef.h>
@@ -68,11 +69,10 @@ private:
     friend struct MarkableTraits<Color>;
     struct EmptyToken { constexpr bool operator==(const EmptyToken&) const = default; };
 
-    // FIXME: Replace Variant with a generic CompactPointerVariant type.
-    using ColorKind = Variant<
+    using ColorKind = CompactVariant<
         EmptyToken,
-        ResolvedColor,
         CurrentColor,
+        UniqueRef<ResolvedColor>,
         UniqueRef<ColorLayers>,
         UniqueRef<ColorMix>,
         UniqueRef<ContrastColor>,
@@ -95,7 +95,6 @@ private:
     >;
 
     Color(EmptyToken);
-    Color(ColorKind&&);
 
 public:
     // The default constructor initializes to Style::CurrentColor to preserve old behavior,
@@ -164,12 +163,10 @@ public:
     String debugDescription() const;
 
 private:
-    template<typename T>
-    static ColorKind makeIndirectColor(T&&);
-    static ColorKind copy(const ColorKind&);
-
     ColorKind value;
 };
+
+static_assert(sizeof(Color) == 8, "Style::Color should be 8 bytes with CompactVariant");
 
 WebCore::Color resolveColor(const Color&, const WebCore::Color& currentColor);
 bool containsCurrentColor(const Color&);
@@ -219,14 +216,11 @@ template<> struct Blending<Color> {
 template<typename... F> decltype(auto) Color::switchOn(F&&... f) const
 {
     auto visitor = WTF::makeVisitor(std::forward<F>(f)...);
-    using ResultType = decltype(visitor(std::declval<ResolvedColor>()));
+    using ResultType = decltype(visitor(std::declval<CurrentColor>()));
 
-    return WTF::switchOn(value,
+    return value.switchOn(
         [&](const EmptyToken&) -> ResultType {
             RELEASE_ASSERT_NOT_REACHED();
-        },
-        [&](const ResolvedColor& resolvedColor) -> ResultType {
-            return visitor(resolvedColor);
         },
         [&](const CurrentColor& currentColor) -> ResultType {
             return visitor(currentColor);
@@ -244,10 +238,8 @@ namespace WTF {
 
 template<>
 struct MarkableTraits<WebCore::Style::Color> {
-    static bool isEmptyValue(const WebCore::Style::Color& color) { return std::holds_alternative<WebCore::Style::Color::EmptyToken>(color.value); }
+    static bool isEmptyValue(const WebCore::Style::Color& color) { return color.value.holdsAlternative<WebCore::Style::Color::EmptyToken>(); }
     static WebCore::Style::Color emptyValue() { return WebCore::Style::Color(WebCore::Style::Color::EmptyToken()); }
 };
 
 }
-
-DEFINE_VARIANT_LIKE_CONFORMANCE(WebCore::Style::Color)

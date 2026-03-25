@@ -56,11 +56,6 @@
 namespace WebCore {
 namespace Style {
 
-Color::Color(Color::ColorKind&& color)
-    : value { WTF::move(color) }
-{
-}
-
 Color::Color(EmptyToken token)
     : value { token }
 {
@@ -77,32 +72,32 @@ Color::Color(CSS::Keyword::Currentcolor)
 }
 
 Color::Color(WebCore::Color color)
-    : value { ResolvedColor { WTF::move(color) } }
+    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WTF::move(color) }) }
 {
 }
 
 Color::Color(SRGBA<uint8_t> color)
-    : value { ResolvedColor { WebCore::Color { color } } }
+    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color { color } }) }
 {
 }
 
 Color::Color(CSS::Keyword::Transparent)
-    : value { ResolvedColor { WebCore::Color::transparentBlack } }
+    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::transparentBlack }) }
 {
 }
 
 Color::Color(CSS::Keyword::Black)
-    : value { ResolvedColor { WebCore::Color::black } }
+    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::black }) }
 {
 }
 
 Color::Color(CSS::Keyword::White)
-    : value { ResolvedColor { WebCore::Color::white } }
+    : value { makeUniqueRef<ResolvedColor>(ResolvedColor { WebCore::Color::white }) }
 {
 }
 
 Color::Color(ResolvedColor&& color)
-    : value { WTF::move(color) }
+    : value { makeUniqueRef<ResolvedColor>(WTF::move(color)) }
 {
 }
 
@@ -112,113 +107,133 @@ Color::Color(CurrentColor&& color)
 }
 
 Color::Color(ColorLayers&& colorLayers)
-    : value { makeIndirectColor(WTF::move(colorLayers)) }
+    : value { makeUniqueRef<ColorLayers>(WTF::move(colorLayers)) }
 {
 }
 
 Color::Color(ColorMix&& colorMix)
-    : value { makeIndirectColor(WTF::move(colorMix)) }
+    : value { makeUniqueRef<ColorMix>(WTF::move(colorMix)) }
 {
 }
 
 Color::Color(ContrastColor&& contrastColor)
-    : value { makeIndirectColor(WTF::move(contrastColor)) }
+    : value { makeUniqueRef<ContrastColor>(WTF::move(contrastColor)) }
 {
 }
 
 Color::Color(RelativeColor<RGBFunctionModernRelative>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<RGBFunctionModernRelative>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<HSLFunctionModern>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<HSLFunctionModern>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<HWBFunction>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<HWBFunction>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<LabFunction>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<LabFunction>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<LCHFunction>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<LCHFunction>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<OKLabFunction>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<OKLabFunction>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<OKLCHFunction>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<OKLCHFunction>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedA98RGB<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedA98RGB<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedDisplayP3<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedDisplayP3<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedLinearDisplayP3<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearDisplayP3<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedProPhotoRGB<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedProPhotoRGB<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedRec2020<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedRec2020<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedSRGBA<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedSRGBA<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorRGBFunction<ExtendedLinearSRGBA<float>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearSRGBA<float>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D50>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D50>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D65>>>&& relative)
-    : value { makeIndirectColor(WTF::move(relative)) }
+    : value { makeUniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D65>>>>(WTF::move(relative)) }
 {
 }
 
 Color::Color(const Color& other)
-    : value { copy(other.value) }
+    : value { EmptyToken { } }
 {
+    other.value.switchOn(
+        [&](const EmptyToken& t) { value = t; },
+        [&](const CurrentColor& c) { value = c; },
+        [&]<typename T>(const UniqueRef<T>& color) { value = makeUniqueRef<T>(color.get()); }
+    );
 }
 
 Color& Color::operator=(const Color& other)
 {
-    value = copy(other.value);
+    if (this != &other) {
+        Color tmp(other);
+        value.swap(tmp.value);
+    }
     return *this;
 }
 
-Color::Color(Color&&) = default;
-Color& Color::operator=(Color&&) = default;
+Color::Color(Color&& other)
+    : value { WTF::move(other.value) }
+{
+    other.value = EmptyToken { };
+}
+
+Color& Color::operator=(Color&& other)
+{
+    if (this != &other) {
+        value.swap(other.value);
+        other.value = EmptyToken { };
+    }
+    return *this;
+}
 
 Color::~Color() = default;
 
@@ -228,18 +243,6 @@ const Color& Color::currentColor()
 {
     static NeverDestroyed<Style::Color> color { CurrentColor { } };
     return color.get();
-}
-
-Color::ColorKind Color::copy(const Color::ColorKind& other)
-{
-    return WTF::switchOn(other,
-        []<typename T>(const T& color) -> Color::ColorKind {
-            return color;
-        },
-        []<typename T>(const UniqueRef<T>& color) -> Color::ColorKind {
-            return makeUniqueRef<T>(color.get());
-        }
-    );
 }
 
 String Color::debugDescription() const
@@ -261,58 +264,58 @@ bool Color::containsCurrentColor() const
 
 bool Color::isCurrentColor() const
 {
-    return std::holds_alternative<CurrentColor>(value);
+    return value.holdsAlternative<CurrentColor>();
 }
 
 bool Color::isColorMix() const
 {
-    return std::holds_alternative<UniqueRef<ColorMix>>(value);
+    return value.holdsAlternative<UniqueRef<ColorMix>>();
 }
 
 bool Color::isContrastColor() const
 {
-    return std::holds_alternative<UniqueRef<ContrastColor>>(value);
+    return value.holdsAlternative<UniqueRef<ContrastColor>>();
 }
 
 bool Color::isRelativeColor() const
 {
-    return std::holds_alternative<UniqueRef<RelativeColor<RGBFunctionModernRelative>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<HSLFunctionModern>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<HWBFunction>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<LabFunction>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<LCHFunction>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<OKLabFunction>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<OKLCHFunction>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedA98RGB<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedDisplayP3<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearDisplayP3<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedProPhotoRGB<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedRec2020<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedSRGBA<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearSRGBA<float>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D50>>>>>(value)
-        || std::holds_alternative<UniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D65>>>>>(value);
+    return value.holdsAlternative<UniqueRef<RelativeColor<RGBFunctionModernRelative>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<HSLFunctionModern>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<HWBFunction>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<LabFunction>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<LCHFunction>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<OKLabFunction>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<OKLCHFunction>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedA98RGB<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedDisplayP3<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearDisplayP3<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedProPhotoRGB<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedRec2020<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedSRGBA<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorRGBFunction<ExtendedLinearSRGBA<float>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D50>>>>>()
+        || value.holdsAlternative<UniqueRef<RelativeColor<ColorXYZFunction<XYZA<float, WhitePoint::D65>>>>>();
 }
 
 bool Color::isResolvedColor() const
 {
-    return std::holds_alternative<ResolvedColor>(value);
+    return value.holdsAlternative<UniqueRef<ResolvedColor>>();
 }
 
 const WebCore::Color& Color::resolvedColor() const
 {
     ASSERT(isResolvedColor());
-    return std::get<ResolvedColor>(value).color;
+    const WebCore::Color* result = nullptr;
+    switchOn(
+        [&](const ResolvedColor& resolved) { result = &resolved.color; },
+        [](const auto&) { RELEASE_ASSERT_NOT_REACHED(); }
+    );
+    return *result;
 }
 
 bool Color::isKnownTransparent() const
 {
     return isResolvedColor() && resolvedColor().isValid() && !resolvedColor().isVisible();
-}
-
-template<typename T> Color::ColorKind Color::makeIndirectColor(T&& colorType)
-{
-    return { makeUniqueRef<T>(WTF::move(colorType)) };
 }
 
 WebCore::Color resolveColor(const Color& value, const WebCore::Color& currentColor)
@@ -329,12 +332,12 @@ bool containsCurrentColor(const Color& value)
 
 String serializationForCSSTokenization(const CSS::SerializationContext& context, const Color& value)
 {
-    return WTF::switchOn(value, [&](const auto& kind) { return WebCore::Style::serializationForCSSTokenization(context, kind); });
+    return value.switchOn([&](const auto& kind) { return WebCore::Style::serializationForCSSTokenization(context, kind); });
 }
 
 void serializationForCSSTokenization(StringBuilder& builder, const CSS::SerializationContext& context, const Color& value)
 {
-    WTF::switchOn(value, [&](const auto& kind) { WebCore::Style::serializationForCSSTokenization(builder, context, kind); });
+    value.switchOn([&](const auto& kind) { WebCore::Style::serializationForCSSTokenization(builder, context, kind); });
 }
 
 void Serialize<Color>::operator()(StringBuilder& builder, const CSS::SerializationContext&, const RenderStyle& style, const Color& value)
@@ -349,7 +352,7 @@ void Serialize<Color>::operator()(StringBuilder& builder, const CSS::Serializati
 TextStream& operator<<(TextStream& ts, const Color& value)
 {
     ts << "Style::Color["_s;
-    WTF::switchOn(value, [&](const auto& kind) { ts << kind; });
+    value.switchOn([&](const auto& kind) { ts << kind; });
     ts << ']';
 
     return ts;
