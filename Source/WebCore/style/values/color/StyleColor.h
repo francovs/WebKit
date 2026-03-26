@@ -73,7 +73,7 @@ private:
         EmptyToken,
         CurrentColor,
         InlinedResolvedColor,
-        UniqueRef<ResolvedColor>,
+        UniqueRef<OutOfLineResolvedColor>,
         UniqueRef<ColorLayers>,
         UniqueRef<ColorMix>,
         UniqueRef<ContrastColor>,
@@ -228,6 +228,10 @@ template<typename... F> decltype(auto) Color::switchOn(F&&... f) const
         },
         [&](const InlinedResolvedColor& inlined) -> ResultType {
             ResolvedColor resolved { inlined.toColor() };
+            return visitor(resolved);
+        },
+        [&](const UniqueRef<OutOfLineResolvedColor>& outOfLine) -> ResultType {
+            ResolvedColor resolved { outOfLine.get().toColor() };
             return visitor(resolved);
         },
         [&]<typename T>(const UniqueRef<T>& color) -> ResultType {

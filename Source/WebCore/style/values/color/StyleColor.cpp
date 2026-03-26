@@ -74,7 +74,7 @@ Color::Color(CSS::Keyword::Currentcolor)
 Color::Color(WebCore::Color color)
     : value { color.tryGetAsPackedInline()
         ? ColorKind { InlinedResolvedColor { color } }
-        : ColorKind { makeUniqueRef<ResolvedColor>(ResolvedColor { WTF::move(color) }) } }
+        : ColorKind { makeUniqueRef<OutOfLineResolvedColor>(OutOfLineResolvedColor { color }) } }
 {
 }
 
@@ -101,7 +101,7 @@ Color::Color(CSS::Keyword::White)
 Color::Color(ResolvedColor&& color)
     : value { color.color.tryGetAsPackedInline()
         ? ColorKind { InlinedResolvedColor { color.color } }
-        : ColorKind { makeUniqueRef<ResolvedColor>(WTF::move(color)) } }
+        : ColorKind { makeUniqueRef<OutOfLineResolvedColor>(OutOfLineResolvedColor { color.color }) } }
 {
 }
 
@@ -304,7 +304,7 @@ bool Color::isRelativeColor() const
 
 bool Color::isResolvedColor() const
 {
-    return value.holdsAlternative<InlinedResolvedColor>() || value.holdsAlternative<UniqueRef<ResolvedColor>>();
+    return value.holdsAlternative<InlinedResolvedColor>() || value.holdsAlternative<UniqueRef<OutOfLineResolvedColor>>();
 }
 
 WebCore::Color Color::resolvedColor() const
@@ -313,7 +313,7 @@ WebCore::Color Color::resolvedColor() const
     WebCore::Color result;
     value.switchOn(
         [&](const InlinedResolvedColor& inlined) { result = inlined.toColor(); },
-        [&](const UniqueRef<ResolvedColor>& resolved) { result = resolved.get().color; },
+        [&](const UniqueRef<OutOfLineResolvedColor>& outOfLine) { result = outOfLine.get().toColor(); },
         [](const auto&) { RELEASE_ASSERT_NOT_REACHED(); }
     );
     return result;

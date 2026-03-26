@@ -45,6 +45,7 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/UniqueRef.h>
 #include <wtf/Variant.h>
 
 #if USE(CG)
@@ -215,6 +216,7 @@ public:
 
 private:
     friend class InlineColor;
+    friend class OutOfLineColor;
     friend void add(Hasher&, const Color&);
 
     class OutOfLineComponents : public ThreadSafeRefCounted<OutOfLineComponents> {
@@ -294,9 +296,8 @@ private:
     uint64_t m_colorAndFlags { invalidColorAndFlags };
 };
 
-// InlineColor wraps the inline (non-out-of-line) representation of a Color.
-// It stores the same uint64_t but asserts on construction that the color is inline.
-// This type is used by CompactVariant to avoid heap-allocating inline sRGB colors.
+// InlineColor and OutOfLineColor can be used to save space with
+// CompactVariant<InlineColor, UniqueRef<OutOfLineColor>>
 class InlineColor {
 public:
     explicit InlineColor(const Color& color)
@@ -344,6 +345,38 @@ private:
 
     uint64_t m_colorAndFlags;
 };
+
+class OutOfLineColor {
+    WTF_MAKE_TZONE_ALLOCATED(OutOfLineColor);
+public:
+    explicit OutOfLineColor(const Color& color)
+        : m_colorSpace(color.colorSpace())
+        , m_components(color.asOutOfLine().unresolvedComponents())
+    {
+        ASSERT(color.isOutOfLine());
+        if (color.isSemantic())
+            m_flags.add(Color::Flags::Semantic);
+        if (color.usesColorFunctionSerialization())
+            m_flags.add(Color::Flags::UseColorFunctionSerialization);
+    }
+
+    Color toColor() const
+    {
+        return Color(Color::OutOfLineComponents::create(ColorComponents<float, 4> { m_components }), m_colorSpace, m_flags);
+    }
+
+    bool operator==(const OutOfLineColor&) const = default;
+
+private:
+    ColorSpace m_colorSpace;
+    OptionSet<Color::Flags> m_flags;
+    ColorComponents<float, 4> m_components;
+};
+
+inline bool operator==(const UniqueRef<OutOfLineColor>& a, const UniqueRef<OutOfLineColor>& b)
+{
+    return a.get() == b.get();
+}
 
 inline void add(Hasher& hasher, const Color& color)
 {
