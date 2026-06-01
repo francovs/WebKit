@@ -70,14 +70,12 @@ public:
 
     void start();
     void close();
-    void entangle();
 
     using MessageHandler = Function<void(JSDOMGlobalObject&, SerializedScriptValue&)>;
     void setMessageHandler(MessageHandler&&);
 
     // Returns nullptr if the passed-in vector is empty.
     static ExceptionOr<Vector<TransferredMessagePort>> disentanglePorts(Vector<Ref<MessagePort>>&&);
-    static Vector<Ref<MessagePort>> entanglePorts(ScriptExecutionContext&, Vector<TransferredMessagePort>&&);
 
     WEBCORE_EXPORT static bool isMessagePortAliveForTesting(const MessagePortIdentifier&);
     WEBCORE_EXPORT static void notifyMessageAvailable(const MessagePortIdentifier&);
@@ -86,7 +84,8 @@ public:
     bool started() const { return m_started; }
     bool isDetached() const { return m_isDetached; }
 
-    void dispatchMessages();
+    void processOneMessage();
+    void scheduleHandlingForMessages(size_t count);
 
     // Returns null if there is no entangled port, or if the entangled port is run by a different thread.
     // This is used solely to enable a GC optimization. Some platforms may not be able to determine ownership
@@ -105,7 +104,8 @@ public:
     void dispatchEvent(Event&) final;
 
     TransferredMessagePort disentangle();
-    static Ref<MessagePort> entangle(ScriptExecutionContext&, TransferredMessagePort&&);
+
+    void didRegister() { m_state = State::NotStarted; }
 
 private:
     MessagePort(ScriptExecutionContext&, const MessagePortIdentifier& local, const MessagePortIdentifier& remote);
@@ -116,7 +116,7 @@ private:
 
     // ActiveDOMObject.
     void contextDestroyed() final;
-    void stop() final { close(); }
+    void stop() final;
     bool virtualHasPendingActivity() const final;
 
     // A port starts out its life entangled, and remains entangled until it is detached or is cloned.
@@ -127,8 +127,17 @@ private:
     bool m_entangled { true };
     bool m_hasMessageEventListener { false };
 
+    enum class State {
+        Unregistered,
+        NotStarted,
+        Started,
+        Disentangled
+    } m_state { State::Unregistered };
+
+
     MessagePortIdentifier m_identifier;
     MessagePortIdentifier m_remoteIdentifier;
+    const ScriptExecutionContextIdentifier m_contextIdentifier;
 
     MessageHandler m_messageHandler;
 };

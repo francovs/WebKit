@@ -70,7 +70,6 @@
 #include "WorkerFontLoadRequest.h"
 #include "WorkerLoaderProxy.h"
 #include "WorkerLocation.h"
-#include "WorkerMessagePortChannelProvider.h"
 #include "WorkerMessagingProxy.h"
 #include "WorkerNavigator.h"
 #include "WorkerOrWorkletGlobalScope.h"
@@ -598,13 +597,6 @@ CacheStorageConnection& WorkerGlobalScope::cacheStorageConnection()
         lazyInitialize(m_cacheStorageConnection, mainThreadConnection.releaseNonNull());
     }
     return *m_cacheStorageConnection;
-}
-
-MessagePortChannelProvider& WorkerGlobalScope::messagePortChannelProvider()
-{
-    if (!m_messagePortChannelProvider)
-        lazyInitialize(m_messagePortChannelProvider, WorkerMessagePortChannelProvider::create(*this));
-    return *m_messagePortChannelProvider;
 }
 
 WorkerSWClientConnection& WorkerGlobalScope::swClientConnection()

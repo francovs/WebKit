@@ -44,7 +44,6 @@
 namespace WebCore {
 
 class MessagePortChannelProvider;
-class WorkerMessagePortChannelProvider;
 class WorkerScriptLoader;
 
 struct WorkletParameters;
@@ -122,8 +121,6 @@ private:
     URL m_url;
     JSC::RuntimeFlags m_jsRuntimeFlags;
     std::optional<ScriptSourceCode> m_code;
-
-    const RefPtr<WorkerMessagePortChannelProvider> m_messagePortChannelProvider;
 
     SettingsValues m_settingsValues;
     String m_agentClusterID;

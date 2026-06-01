@@ -156,7 +156,9 @@ RefPtr<AudioWorkletProcessor> AudioWorkletGlobalScope::createProcessor(const Str
     auto scope = DECLARE_THROW_SCOPE(vm);
     JSC::JSLockHolder lock { globalObject };
 
-    m_pendingProcessorConstructionData = makeUnique<AudioWorkletProcessorConstructionData>(String { name }, MessagePort::entangle(*this, WTF::move(port)));
+    auto claimedPortVector = MessagePortChannelProvider::singleton().claimShippedPorts(*this, Vector<TransferredMessagePort> { WTF::move(port) });
+    m_pendingProcessorConstructionData = makeUnique<AudioWorkletProcessorConstructionData>(String { name }, claimedPortVector.takeLast());
+    
 
     JSC::MarkedArgumentBuffer args;
     bool didFail = false;

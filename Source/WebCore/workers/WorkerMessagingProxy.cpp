@@ -203,7 +203,7 @@ void WorkerMessagingProxy::postMessageToWorkerObject(MessageWithMessagePorts&& m
         if (!workerObject || askedToTerminate())
             return;
 
-        auto ports = MessagePort::entanglePorts(context, WTF::move(message.transferredPorts));
+        auto ports = MessagePortChannelProvider::singleton().claimShippedPorts(context, WTF::move(message.transferredPorts));
         ActiveDOMObject::queueTaskKeepingObjectAlive(*workerObject, TaskSource::PostedMessageQueue, [worker = Ref { *workerObject }, message = WTF::move(message), userGestureForwarder = WTF::move(userGestureForwarder), ports = WTF::move(ports)](auto&) mutable {
             RefPtr workerScriptExecutionContext = worker->scriptExecutionContext();
             if (!workerScriptExecutionContext)
@@ -260,7 +260,7 @@ void WorkerMessagingProxy::postMessageToWorkerGlobalScope(MessageWithMessagePort
         // held by the forwarder; see postMessageToWorkerObject() above.
         m_userGestureForwarder = WTF::move(userGestureForwarder);
 
-        auto ports = MessagePort::entanglePorts(scriptContext, WTF::move(message.transferredPorts));
+        auto ports = MessagePortChannelProvider::singleton().claimShippedPorts(scriptContext, WTF::move(message.transferredPorts));
         auto event = MessageEvent::create(*globalObject, message.message.releaseNonNull(), { }, { }, std::nullopt, WTF::move(ports));
         if (scope.exception()) [[unlikely]] {
             // Currently, we assume that the only way we can get here is if we have a termination.

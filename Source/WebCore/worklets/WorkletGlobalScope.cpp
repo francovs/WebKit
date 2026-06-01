@@ -35,7 +35,6 @@
 #include "JSWorkletGlobalScope.h"
 #include "LocalFrame.h"
 #include "SecurityOriginPolicy.h"
-#include "WorkerMessagePortChannelProvider.h"
 #include "WorkerOrWorkletThread.h"
 #include "WorkerScriptLoader.h"
 #include "WorkletParameters.h"
@@ -175,13 +174,6 @@ void WorkletGlobalScope::fetchAndInvokeScript(const URL& moduleURL, FetchRequest
 {
     ASSERT(!isMainThread());
     script()->loadAndEvaluateModule(moduleURL, credentials, WTF::move(completionHandler));
-}
-
-MessagePortChannelProvider& WorkletGlobalScope::messagePortChannelProvider()
-{
-    if (!m_messagePortChannelProvider)
-        lazyInitialize(m_messagePortChannelProvider, WorkerMessagePortChannelProvider::create(*this));
-    return *m_messagePortChannelProvider;
 }
 
 } // namespace WebCore

@@ -40,7 +40,7 @@ using namespace WebCore;
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(WebMessagePortChannelProvider);
 
-WebMessagePortChannelProvider& WebMessagePortChannelProvider::singleton()
+WebCore::RemoteProvider& WebMessagePortChannelProvider::singleton()
 {
     static WebMessagePortChannelProvider* provider = new WebMessagePortChannelProvider;
     return *provider;
@@ -57,6 +57,18 @@ static inline IPC::Connection& networkProcessConnection()
 {
     return WebProcess::singleton().ensureNetworkProcessConnection().connection();
 }
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 void WebMessagePortChannelProvider::createNewMessagePortChannel(const MessagePortIdentifier& port1, const MessagePortIdentifier& port2)
 {
@@ -151,5 +163,7 @@ void WebMessagePortChannelProvider::postMessageToRemote(MessageWithMessagePorts&
 
     protect(networkProcessConnection())->send(Messages::NetworkConnectionToWebProcess::PostMessageToRemote { message, remoteTarget }, 0);
 }
+
+*/
 
 } // namespace WebKit

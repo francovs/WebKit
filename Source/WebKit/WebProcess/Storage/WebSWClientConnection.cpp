@@ -33,7 +33,6 @@
 #include "NetworkProcessConnection.h"
 #include "NetworkProcessMessages.h"
 #include "SharedBufferReference.h"
-#include "WebMessagePortChannelProvider.h"
 #include "WebPage.h"
 #include "WebPageProxyMessages.h"
 #include "WebProcess.h"
@@ -141,9 +140,6 @@ void WebSWClientConnection::scheduleUnregisterJobInServer(ServiceWorkerRegistrat
 
 void WebSWClientConnection::postMessageToServiceWorker(ServiceWorkerIdentifier destinationIdentifier, MessageWithMessagePorts&& message, const ServiceWorkerOrClientIdentifier& sourceIdentifier)
 {
-    for (auto& port : message.transferredPorts)
-        WebMessagePortChannelProvider::singleton().messagePortSentToRemote(port.first);
-
     send(Messages::WebSWServerConnection::PostMessageToServiceWorker { destinationIdentifier, WTF::move(message), sourceIdentifier });
 }
 

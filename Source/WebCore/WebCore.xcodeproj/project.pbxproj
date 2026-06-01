@@ -2241,7 +2241,6 @@
 		51A644B5292895C9001A6691 /* GameControllerSoftLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 5130F2F224AEA60200E1D0A0 /* GameControllerSoftLink.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		51A644B629296E44001A6691 /* GameControllerSPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 5130F2F524AEA60300E1D0A0 /* GameControllerSPI.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		51A748E32005D0E80075BA68 /* MessageWithMessagePorts.h in Headers */ = {isa = PBXBuildFile; fileRef = 51A748E02005D0E00075BA68 /* MessageWithMessagePorts.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		51A748E62006004F0075BA68 /* MessagePortChannelProviderImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 51A748E5200600210075BA68 /* MessagePortChannelProviderImpl.h */; };
 		51A9D9E9195B931F001B2B5C /* GamepadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 51A9D9E7195B931F001B2B5C /* GamepadManager.cpp */; };
 		51A9D9EA195B931F001B2B5C /* GamepadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 51A9D9E8195B931F001B2B5C /* GamepadManager.h */; };
 		51AF503616F100F60095B2E8 /* ResourceLoaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 51AF503516F100F60095B2E8 /* ResourceLoaderTypes.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -10939,8 +10938,6 @@
 		4110A25628E5C40100321D09 /* PlaneLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLayout.h; sourceTree = "<group>"; };
 		4110A25828E5C41700321D09 /* VideoPixelFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPixelFormat.h; sourceTree = "<group>"; };
 		4110A25B28E5C84700321D09 /* VideoPixelFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoPixelFormat.cpp; sourceTree = "<group>"; };
-		41114A7A2317B39E00B56007 /* WorkerMessagePortChannelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkerMessagePortChannelProvider.h; sourceTree = "<group>"; };
-		41114A7C2317B39E00B56007 /* WorkerMessagePortChannelProvider.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkerMessagePortChannelProvider.cpp; sourceTree = "<group>"; };
 		411223B8260244FE00B0A0B6 /* ScriptExecutionContextIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptExecutionContextIdentifier.h; sourceTree = "<group>"; };
 		411223C32603567C00B0A0B6 /* DetachedRTCDataChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetachedRTCDataChannel.h; sourceTree = "<group>"; };
 		4112B53F1F9F9C9B00E67875 /* ServiceWorkerThreadProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServiceWorkerThreadProxy.h; sourceTree = "<group>"; };
@@ -12818,8 +12815,6 @@
 		51A4BB0E1954D62700FA5C2E /* NavigatorGamepad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigatorGamepad.h; sourceTree = "<group>"; };
 		51A4BB0F1954D62700FA5C2E /* Navigator+Gamepad.idl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Navigator+Gamepad.idl"; sourceTree = "<group>"; };
 		51A748E02005D0E00075BA68 /* MessageWithMessagePorts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageWithMessagePorts.h; sourceTree = "<group>"; };
-		51A748E4200600210075BA68 /* MessagePortChannelProviderImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MessagePortChannelProviderImpl.cpp; sourceTree = "<group>"; };
-		51A748E5200600210075BA68 /* MessagePortChannelProviderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagePortChannelProviderImpl.h; sourceTree = "<group>"; };
 		51A9D9E7195B931F001B2B5C /* GamepadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GamepadManager.cpp; sourceTree = "<group>"; };
 		51A9D9E8195B931F001B2B5C /* GamepadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadManager.h; sourceTree = "<group>"; };
 		51AA3F6E0BD5AA9E00892971 /* ResourceLoaderMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourceLoaderMac.mm; sourceTree = "<group>"; };
@@ -29076,14 +29071,10 @@
 				51ECC3F4200587B700483EAE /* MessagePortChannel.h */,
 				51ECC3FC2005930200483EAE /* MessagePortChannelProvider.cpp */,
 				51ECC3FB2005930100483EAE /* MessagePortChannelProvider.h */,
-				51A748E4200600210075BA68 /* MessagePortChannelProviderImpl.cpp */,
-				51A748E5200600210075BA68 /* MessagePortChannelProviderImpl.h */,
 				51ECC3F5200587B700483EAE /* MessagePortChannelRegistry.cpp */,
 				51ECC3F1200587B500483EAE /* MessagePortChannelRegistry.h */,
 				51A748E02005D0E00075BA68 /* MessageWithMessagePorts.h */,
 				46DA4A0027AB038D00E375A8 /* TransferredMessagePort.h */,
-				41114A7C2317B39E00B56007 /* WorkerMessagePortChannelProvider.cpp */,
-				41114A7A2317B39E00B56007 /* WorkerMessagePortChannelProvider.h */,
 			);
 			path = messageports;
 			sourceTree = "<group>";
@@ -47299,7 +47290,6 @@
 				E1ADECBF0E76ACF1004A1A5E /* MessagePort.h in Headers */,
 				51ECC3F6200587BF00483EAE /* MessagePortChannel.h in Headers */,
 				51ECC3FD2005930D00483EAE /* MessagePortChannelProvider.h in Headers */,
-				51A748E62006004F0075BA68 /* MessagePortChannelProviderImpl.h in Headers */,
 				51ECC3F8200587BF00483EAE /* MessagePortChannelRegistry.h in Headers */,
 				51F645E01FF4594E00B54DED /* MessagePortIdentifier.h in Headers */,
 				CD5F16592DBBD72300CE85D9 /* MessageTargetForTesting.h in Headers */,

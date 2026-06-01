@@ -43,7 +43,6 @@
 #include "WebCryptoClient.h"
 #include "WebDatabaseProvider.h"
 #include "WebLocalFrameLoaderClient.h"
-#include "WebMessagePortChannelProvider.h"
 #include "WebNotificationClient.h"
 #include "WebPage.h"
 #include "WebPreferencesKeys.h"
@@ -486,9 +485,6 @@ void WebSWContextManagerConnection::setRegistrationUpdateViaCache(WebCore::Servi
 
 void WebSWContextManagerConnection::postMessageToServiceWorkerClient(const ScriptExecutionContextIdentifier& destinationIdentifier, const MessageWithMessagePorts& message, ServiceWorkerIdentifier sourceIdentifier, const SecurityOriginData& sourceOrigin)
 {
-    for (auto& port : message.transferredPorts)
-        WebMessagePortChannelProvider::singleton().messagePortSentToRemote(port.first);
-
     m_connectionToNetworkProcess->send(Messages::WebSWServerToContextConnection::PostMessageToServiceWorkerClient(destinationIdentifier, message, sourceIdentifier, sourceOrigin), 0);
 }
 

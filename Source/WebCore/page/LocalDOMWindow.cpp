@@ -1004,7 +1004,7 @@ void LocalDOMWindow::processPostMessage(JSC::JSGlobalObject& lexicalGlobalObject
         UserGestureIndicator userGestureIndicator(userGestureToForward);
         InspectorInstrumentation::willDispatchPostMessage(frame, postMessageIdentifier);
 
-        auto ports = MessagePort::entanglePorts(*document, WTF::move(message.transferredPorts));
+        auto ports = MessagePortChannelProvider::singleton().claimShippedPorts(*document, WTF::move(message.transferredPorts));
         auto event = MessageEvent::create(*globalObject, message.message.releaseNonNull(), WTF::move(sourceOrigin), { }, incumbentWindowProxy ? std::optional { MessageEventSource(incumbentWindowProxy.releaseNonNull()) } : std::nullopt, WTF::move(ports));
         if (scope.exception()) [[unlikely]] {
             // Currently, we assume that the only way we can get here is if we have a termination.

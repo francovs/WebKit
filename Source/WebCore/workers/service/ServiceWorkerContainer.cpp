@@ -499,7 +499,7 @@ void ServiceWorkerContainer::postMessage(MessageWithMessagePorts&& message, Serv
 
     MessageEventSource source = ServiceWorker::getOrCreate(context.get(), WTF::move(sourceData));
 
-    auto messageEvent = MessageEvent::create(*globalObject, message.message.releaseNonNull(), WTF::move(sourceOrigin), { }, WTF::move(source), MessagePort::entanglePorts(context.get(), WTF::move(message.transferredPorts)));
+    auto messageEvent = MessageEvent::create(*globalObject, message.message.releaseNonNull(), WTF::move(sourceOrigin), { }, WTF::move(source), MessagePortChannelProvider::singleton().claimShippedPorts(context.get(), WTF::move(message.transferredPorts)));
     if (scope.exception()) [[unlikely]] {
         // Currently, we assume that the only way we can get here is if we have a termination.
         RELEASE_ASSERT(vm.hasPendingTerminationException());

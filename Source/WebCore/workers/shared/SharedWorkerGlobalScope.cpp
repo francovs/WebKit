@@ -73,7 +73,7 @@ Ref<SharedWorkerThread> SharedWorkerGlobalScope::thread()
 void SharedWorkerGlobalScope::postConnectEvent(TransferredMessagePort&& transferredPort, const SecurityOriginData& sourceOriginData)
 {
     SCOPE_RELEASE_LOG("postConnectEvent:");
-    auto ports = MessagePort::entanglePorts(*this, { WTF::move(transferredPort) });
+    auto ports = MessagePortChannelProvider::singleton().claimShippedPorts(*this, { WTF::move(transferredPort) });
     ASSERT(ports.size() == 1);
     Ref port = ports[0];
     auto event = MessageEvent::create(emptyString(), sourceOriginData.securityOrigin(), { }, port, WTF::move(ports));

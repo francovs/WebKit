@@ -1469,9 +1469,7 @@ dom/WindowOrWorkerGlobalScopeTrustedTypes.cpp
 dom/XMLDocument.cpp
 dom/messageports/MessagePortChannel.cpp
 dom/messageports/MessagePortChannelProvider.cpp
-dom/messageports/MessagePortChannelProviderImpl.cpp
 dom/messageports/MessagePortChannelRegistry.cpp
-dom/messageports/WorkerMessagePortChannelProvider.cpp
 domjit/DOMJITHelpers.cpp
 domjit/JSDocumentDOMJIT.cpp
 domjit/JSDocumentFragmentDOMJIT.cpp

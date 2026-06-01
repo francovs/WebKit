@@ -26,8 +26,16 @@
 #pragma once
 
 #include <WebCore/ProcessIdentifier.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <WebCore/NonSerializedDataIdentifier.h>
+#include "MessagePortIdentifier.h"
+#include "MessageWithMessagePorts.h"
+#include <wtf/AbstractRefCounted.h>
+#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
+#include <wtf/HashMap.h>
+#include <wtf/Lock.h>
+#include <wtf/RefCounted.h>
+#include <wtf/UniqueRef.h>
 #include <wtf/Vector.h>
 
 namespace WebCore {
@@ -36,23 +44,66 @@ class ScriptExecutionContext;
 struct MessagePortIdentifier;
 struct MessageWithMessagePorts;
 
-class MessagePortChannelProvider : public AbstractRefCountedAndCanMakeWeakPtr<MessagePortChannelProvider> {
+
+class RemoteProvider: public AbstractRefCounted {
 public:
-    static MessagePortChannelProvider& fromContext(ScriptExecutionContext&);
-    static MessagePortChannelProvider& singleton();
-    WEBCORE_EXPORT static void setSharedProvider(MessagePortChannelProvider&);
+    virtual void postMessageToRemote(Vector<std::pair<MessagePortIdentifier, bool>> updates) = 0;
+};
 
-    virtual ~MessagePortChannelProvider() { }
+class MessagePortChannelProvider final: public CanMakeWeakPtr<MessagePortChannelProvider>, public RefCounted<MessagePortChannelProvider> {
+public:
+    WEBCORE_EXPORT static MessagePortChannelProvider& singleton();
+    WEBCORE_EXPORT static void setSharedProvider(Ref<RemoteProvider>&&);
 
-    // Operations that WebProcesses perform
-    virtual void createNewMessagePortChannel(const MessagePortIdentifier& local, const MessagePortIdentifier& remote) = 0;
-    virtual void entangleLocalPortInThisProcessToRemote(const MessagePortIdentifier& local, const MessagePortIdentifier& remote) = 0;
-    virtual void messagePortDisentangled(const MessagePortIdentifier& local) = 0;
-    virtual void messagePortClosed(const MessagePortIdentifier& local) = 0;
-    
-    virtual void takeAllMessagesForPort(const MessagePortIdentifier&, CompletionHandler<void(Vector<MessageWithMessagePorts>&&, CompletionHandler<void()>&&)>&&) = 0;
+    ~MessagePortChannelProvider();
+    void ref() const { RefCounted::ref(); }
+    void deref() const { RefCounted::deref(); }
 
-    virtual void postMessageToRemote(MessageWithMessagePorts&&, const MessagePortIdentifier& remoteTarget) = 0;
+private:
+    MessagePortChannelProvider(RefPtr<RemoteProvider>&&);
+    static Ref<MessagePortChannelProvider> create(RefPtr<RemoteProvider>&&);
+    RefPtr<RemoteProvider> m_remoteProvider;
+
+public:
+    // FIXME: what does this do? Still need to plug it in:
+    WEBCORE_EXPORT void dropNonSerializableInProcessCache(NonSerializedDataIdentifier);
+
+    // New interface:
+    bool registerNewChannel(ScriptExecutionContext&, Ref<MessagePort>, Ref<MessagePort>);
+    void postMessageFromPort(MessageWithMessagePorts&&, MessagePortIdentifier);
+    MessageWithMessagePorts takeOneMessage(MessagePortIdentifier);
+    Vector<Ref<MessagePort>> claimShippedPorts(ScriptExecutionContext&, Vector<TransferredMessagePort>);
+    void startPort(Ref<MessagePort>);
+    void closePort(MessagePortIdentifier);
+    void deactivatePort(MessagePortIdentifier);
+    void disentangleForShipping(MessagePortIdentifier);
+
+    // IPC:
+    void gotMessagesForPort(Vector<MessageWithMessagePorts>&&, MessagePortIdentifier);
+
+private:
+    class PortEntry {
+        WTF_MAKE_TZONE_ALLOCATED(PortEntry);
+    public:
+        PortEntry(ThreadSafeWeakPtr<MessagePort> entangledTo, MessagePortIdentifier remoteEnd)
+        : entangledTo{WTF::move(entangledTo)}
+        , remoteEnd{WTF::move(remoteEnd)}
+        { }
+
+        ThreadSafeWeakPtr<MessagePort> entangledTo;
+        MessagePortIdentifier remoteEnd;
+        // FIXME: consider lock free alternative:
+        Deque<MessageWithMessagePorts> messageQueue;
+        bool isStarted { false };
+        bool remoteClosed { false };
+    };
+
+    HashMap<MessagePortIdentifier, UniqueRef<PortEntry>> m_portsInProcess;
+    Lock m_portLock;
+
+    // IPC:
+    Vector<std::pair<MessagePortIdentifier, bool>> collectRemotePortRegistryUpdates(MessagePortIdentifier);
+    void postMessageToRemote(MessagePortIdentifier target, MessageWithMessagePorts&& message);
 };
 
 } // namespace WebCore

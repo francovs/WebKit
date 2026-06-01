@@ -90,7 +90,7 @@ ExceptionOr<JSC::JSValue> WindowOrWorkerGlobalScope::structuredClone(JSDOMGlobal
 
     Vector<Ref<MessagePort>> entangledPorts;
     if (RefPtr scriptExecutionContext = relevantGlobalObject.scriptExecutionContext())
-        entangledPorts = MessagePort::entanglePorts(*scriptExecutionContext, disentangledPorts.releaseReturnValue());
+        entangledPorts = MessagePortChannelProvider::singleton().claimShippedPorts(*scriptExecutionContext, disentangledPorts.releaseReturnValue());
 
     return messageData.returnValue()->deserialize(lexicalGlobalObject, &relevantGlobalObject, entangledPorts);
 }

@@ -67,7 +67,6 @@ class WorkerCacheStorageConnection;
 class WorkerClient;
 class WorkerFileSystemStorageConnection;
 class WorkerLocation;
-class WorkerMessagePortChannelProvider;
 class WorkerNavigator;
 class WorkerSWClientConnection;
 class WorkerStorageConnection;
@@ -109,7 +108,6 @@ public:
     WorkerFileSystemStorageConnection& getFileSystemStorageConnection(Ref<FileSystemStorageConnection>&&);
     WEBCORE_EXPORT WorkerFileSystemStorageConnection* fileSystemStorageConnection();
     CacheStorageConnection& cacheStorageConnection();
-    MessagePortChannelProvider& messagePortChannelProvider();
 
     WorkerSWClientConnection& swClientConnection();
     void updateServiceWorkerClientData() final;
@@ -243,7 +241,6 @@ private:
     MemoryCompactRobinHoodHashMap<URL, WeakHashSet<ScriptBufferSourceProvider>> m_importedScriptsSourceProviders;
 
     const RefPtr<CacheStorageConnection> m_cacheStorageConnection;
-    const RefPtr<WorkerMessagePortChannelProvider> m_messagePortChannelProvider;
     const RefPtr<WorkerSWClientConnection> m_swClientConnection;
     const std::unique_ptr<CSSValuePool> m_cssValuePool;
     const std::unique_ptr<WorkerClient> m_workerClient;

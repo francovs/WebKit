@@ -54,7 +54,7 @@ ExceptionOr<Ref<RTCRtpScriptTransformer>> RTCRtpScriptTransformer::create(Script
     if (!options.message)
         return Exception { ExceptionCode::InvalidStateError };
 
-    auto ports = MessagePort::entanglePorts(context, WTF::move(options.transferredPorts));
+    auto ports = MessagePortChannelProvider::singleton().claimShippedPorts(context, WTF::move(options.transferredPorts));
     auto transformer = adoptRef(*new RTCRtpScriptTransformer(context, options.message.releaseNonNull(), WTF::move(ports), producerOrException.releaseReturnValue()));
     transformer->suspendIfNeeded();
     return transformer;

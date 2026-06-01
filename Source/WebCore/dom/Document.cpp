@@ -11435,11 +11435,6 @@ bool Document::shouldIgnoreSyncXHRs() const
     return m_numberOfRejectedSyncXHRs > maxRejectedSyncXHRsPerEventLoopIteration;
 }
 
-MessagePortChannelProvider& Document::messagePortChannelProvider()
-{
-    return MessagePortChannelProvider::singleton();
-}
-
 #if USE(SYSTEM_PREVIEW)
 void Document::dispatchSystemPreviewActionEvent(const SystemPreviewInfo& systemPreviewInfo, const String& message)
 {

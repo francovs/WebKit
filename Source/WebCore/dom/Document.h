@@ -1938,8 +1938,6 @@ public:
     bool inHitTesting() const { return m_inHitTesting; }
 #endif
 
-    MessagePortChannelProvider& messagePortChannelProvider();
-
 #if USE(SYSTEM_PREVIEW)
     WEBCORE_EXPORT void dispatchSystemPreviewActionEvent(const SystemPreviewInfo&, const String& message);
 #endif

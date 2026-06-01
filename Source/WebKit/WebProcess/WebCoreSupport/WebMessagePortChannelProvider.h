@@ -35,10 +35,10 @@
 
 namespace WebKit {
 
-class WebMessagePortChannelProvider final : public WebCore::MessagePortChannelProvider {
+class WebMessagePortChannelProvider final : public WebCore::RemoteProvider, public RefCounted<WebMessagePortChannelProvider> {
     WTF_MAKE_TZONE_ALLOCATED(WebMessagePortChannelProvider);
 public:
-    static WebMessagePortChannelProvider& NODELETE singleton();
+    static WebCore::RemoteProvider& NODELETE singleton();
 
     void messagePortSentToRemote(const WebCore::MessagePortIdentifier&);
     void dropNonSerializableInProcessCache(WebCore::NonSerializedDataIdentifier);
@@ -47,18 +47,20 @@ public:
     void ref() const { }
     void deref() const { }
 
+
+    void postMessageToRemote(Vector<std::pair<WebCore::MessagePortIdentifier, bool>> updates) { UNUSED_PARAM(updates); };
+
 private:
     WebMessagePortChannelProvider();
     ~WebMessagePortChannelProvider() final;
 
-    void createNewMessagePortChannel(const WebCore::MessagePortIdentifier& local, const WebCore::MessagePortIdentifier& remote) final;
-    void entangleLocalPortInThisProcessToRemote(const WebCore::MessagePortIdentifier& local, const WebCore::MessagePortIdentifier& remote) final;
-    void messagePortDisentangled(const WebCore::MessagePortIdentifier& local) final;
-    void messagePortClosed(const WebCore::MessagePortIdentifier& local) final;
-    void takeAllMessagesForPort(const WebCore::MessagePortIdentifier&, CompletionHandler<void(Vector<WebCore::MessageWithMessagePorts>&&, CompletionHandler<void()>&&)>&&) final;
-    void postMessageToRemote(WebCore::MessageWithMessagePorts&&, const WebCore::MessagePortIdentifier& remoteTarget) final;
-
-    HashMap<WebCore::MessagePortIdentifier, Vector<WebCore::MessageWithMessagePorts>> m_inProcessPortMessages;
+    // void createNewMessagePortChannel(const WebCore::MessagePortIdentifier& local, const WebCore::MessagePortIdentifier& remote) final;
+    // void entangleLocalPortInThisProcessToRemote(const WebCore::MessagePortIdentifier& local, const WebCore::MessagePortIdentifier& remote) final;
+    // void messagePortDisentangled(const WebCore::MessagePortIdentifier& local) final;
+    // void messagePortClosed(const WebCore::MessagePortIdentifier& local) final;
+    // void takeAllMessagesForPort(const WebCore::MessagePortIdentifier&, CompletionHandler<void(Vector<WebCore::MessageWithMessagePorts>&&, CompletionHandler<void()>&&)>&&) final;
+    // void postMessageToRemote(WebCore::MessageWithMessagePorts&&, const WebCore::MessagePortIdentifier& remoteTarget) final;
+    // HashMap<WebCore::MessagePortIdentifier, Vector<WebCore::MessageWithMessagePorts>> m_inProcessPortMessages;
 
     using NonSerializedDataToken = WebCore::SerializedScriptValue::NonSerializedDataToken;
     // FIXME: this data registry currently only holds SharedArrayBuffer contents

@@ -268,33 +268,33 @@ void ScriptExecutionContext::processMessageForPortSoon(const MessagePortIdentifi
 
 void ScriptExecutionContext::dispatchMessagePortEvents()
 {
-    ASSERT(isContextThread());
-    checkConsistency();
+//     ASSERT(isContextThread());
+//     checkConsistency();
 
-    Ref<ScriptExecutionContext> protectedThis(*this);
-    ASSERT(m_willprocessMessageWithMessagePortsSoon);
-    m_willprocessMessageWithMessagePortsSoon = false;
+//     Ref<ScriptExecutionContext> protectedThis(*this);
+//     ASSERT(m_willprocessMessageWithMessagePortsSoon);
+//     m_willprocessMessageWithMessagePortsSoon = false;
 
-    auto completionHandlers = std::exchange(m_processMessageWithMessagePortsSoonHandlers, Vector<CompletionHandler<void()>> { });
-    bool dispatchAll = std::exchange(m_dispatchAllPorts, false);
-    auto portsToDispatch = WTF::move(m_portsWithAvailableMessages);
+//     auto completionHandlers = std::exchange(m_processMessageWithMessagePortsSoonHandlers, Vector<CompletionHandler<void()>> { });
+//     bool dispatchAll = std::exchange(m_dispatchAllPorts, false);
+//     auto portsToDispatch = WTF::move(m_portsWithAvailableMessages);
 
-    if (dispatchAll) {
-        m_messagePorts.forEach([](auto& messagePort) {
-            if (messagePort.started())
-                messagePort.dispatchMessages();
-        });
-    } else {
-        for (auto& portIdentifier : portsToDispatch) {
-            m_messagePorts.forEach([&portIdentifier](auto& messagePort) {
-                if (messagePort.identifier() == portIdentifier && messagePort.started())
-                    messagePort.dispatchMessages();
-            });
-        }
-    }
+//     if (dispatchAll) {
+//         m_messagePorts.forEach([](auto& messagePort) {
+//             if (messagePort.started())
+//                 messagePort.dispatchMessages();
+//         });
+//     } else {
+//         for (auto& portIdentifier : portsToDispatch) {
+//             m_messagePorts.forEach([&portIdentifier](auto& messagePort) {
+//                 if (messagePort.identifier() == portIdentifier && messagePort.started())
+//                     messagePort.dispatchMessages();
+//             });
+//         }
+//     }
 
-    for (auto& completionHandler : completionHandlers)
-        completionHandler();
+//     for (auto& completionHandler : completionHandlers)
+//         completionHandler();
 }
 
 void ScriptExecutionContext::createdMessagePort(MessagePort& messagePort)

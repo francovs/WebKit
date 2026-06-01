@@ -29,7 +29,6 @@
 #include "MessageSenderInlines.h"
 #include "RemoteDisplayListRecorderProxy.h"
 #include "WebFrameProxyMessages.h"
-#include "WebMessagePortChannelProvider.h"
 #include "WebPage.h"
 #include "WebPageProxyMessages.h"
 #include <WebCore/AXObjectCache.h>
@@ -89,9 +88,6 @@ void WebRemoteFrameClient::paintContents(GraphicsContext& context, const IntRect
 
 void WebRemoteFrameClient::postMessageToRemote(FrameIdentifier source, const SecurityOriginData& sourceOrigin, FrameIdentifier target, std::optional<SecurityOriginData> targetOrigin, const MessageWithMessagePorts& message)
 {
-    for (auto& port : message.transferredPorts)
-        WebMessagePortChannelProvider::singleton().messagePortSentToRemote(port.first);
-
     if (RefPtr page = m_frame->page())
         page->send(Messages::WebPageProxy::PostMessageToRemote(source, sourceOrigin, target, targetOrigin, message));
 }
